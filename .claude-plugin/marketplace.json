@@ -1,0 +1,21 @@
+{
+  "name": "alexoberneyer",
+  "owner": {
+    "name": "Alex Oberneyer"
+  },
+  "metadata": {
+    "description": "Personal Claude Code skills and commands.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "writing",
+      "description": "Polish raw text into a clean message, and proofread posts before publishing.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Alex Oberneyer"
+      },
+      "source": "./plugins/writing"
+    }
+  ]
+}

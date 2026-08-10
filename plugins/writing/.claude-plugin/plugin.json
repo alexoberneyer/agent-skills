@@ -1,0 +1,8 @@
+{
+  "name": "writing",
+  "version": "0.1.0",
+  "description": "Polish raw text into a clean message, and proofread posts before publishing.",
+  "author": {
+    "name": "Alex Oberneyer"
+  }
+}
