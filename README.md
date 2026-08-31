@@ -73,3 +73,10 @@ plugins/<name>/
   skills/<name>/SKILL.md          # skills
   skills/<name>/scripts/          # bundled scripts, referenced via ${CLAUDE_PLUGIN_ROOT}
 ```
+
+Skills are invocable as `/<plugin>:<skill-name>` on their own, so they need no
+command wrapper. **Never give a command the same name as a skill in the same
+plugin.** Running the command injects a `<command-name>` block, the follow-up
+`Skill` call is deduplicated against it ("already loaded, instructions
+unchanged"), and `SKILL.md` never reaches the model — only the wrapper's few
+lines do, so every rule that lives in the skill is silently skipped.
