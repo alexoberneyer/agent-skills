@@ -1,7 +1,7 @@
 {
   "name": "writing",
-  "version": "0.1.0",
-  "description": "Polish raw text into a clean message, and proofread posts before publishing.",
+  "version": "0.2.0",
+  "description": "Polish raw text into a clean message, proofread posts before publishing, and copy answers to the clipboard.",
   "author": {
     "name": "Alex Oberneyer"
   }

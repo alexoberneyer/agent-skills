@@ -5,17 +5,26 @@
   },
   "metadata": {
     "description": "Personal Claude Code skills and commands.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "writing",
-      "description": "Polish raw text into a clean message, and proofread posts before publishing.",
-      "version": "0.1.0",
+      "description": "Polish raw text into a clean message, proofread posts before publishing, and copy answers to the clipboard.",
+      "version": "0.2.0",
       "author": {
         "name": "Alex Oberneyer"
       },
       "source": "./plugins/writing"
+    },
+    {
+      "name": "boards",
+      "description": "Read tickets and boards from the tools they live in. Currently Notion pages.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Alex Oberneyer"
+      },
+      "source": "./plugins/boards"
     }
   ]
 }

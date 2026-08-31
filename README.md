@@ -8,6 +8,7 @@ packaged as a plugin marketplace.
 ```
 /plugin marketplace add alexoberneyer/claude-skills
 /plugin install writing@alexoberneyer
+/plugin install boards@alexoberneyer
 ```
 
 ## Plugins
@@ -18,11 +19,33 @@ packaged as a plugin marketplace.
 | --- | --- |
 | `/writing:polish-text <text>` | Polishes raw text (voice memo transcript, rough draft) into a clean structured message in the same language, then copies it to the clipboard. |
 | `/writing:proofread-post <file>` | Proofreads a post before publishing and reports findings as a numbered diagnosis. Changes nothing until you ask. |
+| `/writing:copy [what]` | Copies the deliverable out of Claude's previous message to the clipboard — the draft or the snippet, not the commentary wrapped around it. |
 
 `proofread-post` reports in a fixed order — mechanical issues first, substantive
 last — so you can reply "apply #1–#3" and decline the rest. It reads the
 project's `CLAUDE.md` for any front matter or publishing format it should check
 against, so it stays useful across different site generators.
+
+`copy` and `polish-text` shell out to `pbcopy`, so the clipboard step is macOS
+only. Everything else works anywhere.
+
+### `boards`
+
+| Command | What it does |
+| --- | --- |
+| `/boards:notion-ticket <url or id>` | Fetches a Notion page — properties, full body, and comments — and presents it for analysis. |
+
+**Setup.** `notion-ticket` needs `NOTION_API_KEY`, either exported in your shell
+or in a `.env` file in the directory you run Claude from:
+
+1. Create an internal integration at <https://www.notion.so/my-integrations> and
+   copy its token.
+2. In Notion, open the page or its parent database → **⋯ → Connections** → add
+   the integration. Without this the API returns 404 even for pages you can
+   see in the browser.
+
+The script is a self-contained [uv](https://docs.astral.sh/uv/) script, so its
+dependencies install on first run. No virtualenv to manage.
 
 ## Local development
 
@@ -48,4 +71,5 @@ plugins/<name>/
   .claude-plugin/plugin.json      # plugin manifest
   commands/                       # slash commands
   skills/<name>/SKILL.md          # skills
+  skills/<name>/scripts/          # bundled scripts, referenced via ${CLAUDE_PLUGIN_ROOT}
 ```

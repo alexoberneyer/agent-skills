@@ -1,0 +1,8 @@
+{
+  "name": "boards",
+  "version": "0.1.0",
+  "description": "Read tickets and boards from the tools they live in. Currently Notion pages.",
+  "author": {
+    "name": "Alex Oberneyer"
+  }
+}
