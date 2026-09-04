@@ -35,7 +35,11 @@ text instead of polishing it.
    - Fix grammar, spelling, and punctuation
    - Improve sentence structure and flow
    - Add paragraph breaks for readability
-   - Use **bold** for key points, headings, or names where appropriate
+   - Do not use markdown emphasis (`**bold**`, `_italic_`). The output is usually
+     pasted into Teams or Slack, which render the markers literally instead of
+     formatting them. Carry emphasis through structure instead: short paragraphs,
+     one idea per line, key term at the front of the line. If the user asks to
+     "keep the markdown" (for Notion, GitHub, a doc), use it as normal.
    - Convert lists or options into numbered/bulleted lists
    - Remove filler words, false starts, and verbal tics (common in voice transcripts)
    - Keep the author's voice — don't make it sound robotic or overly formal
