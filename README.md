@@ -9,6 +9,7 @@ packaged as a plugin marketplace.
 /plugin marketplace add alexoberneyer/claude-skills
 /plugin install writing@alexoberneyer
 /plugin install boards@alexoberneyer
+/plugin install context@alexoberneyer
 ```
 
 ## Local Codex and pi
@@ -54,6 +55,15 @@ or in a `.env` file in the working directory:
 
 The script is a self-contained [uv](https://docs.astral.sh/uv/) script, so its
 dependencies install on first run. No virtualenv to manage.
+
+### `context`
+
+| Command | What it does |
+| --- | --- |
+| `/context:keep` | Reviews the conversation and proposes what to keep: a memory entry, a repo context file, or nothing. Flags memories the conversation made stale. Writes only after you approve. |
+
+It also triggers on questions like "does any memory need to be updated?". Direct
+orders like "put X in memory" skip the review.
 
 ## Local development
 

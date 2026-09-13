@@ -1,0 +1,8 @@
+{
+  "name": "context",
+  "version": "0.1.0",
+  "description": "Decide what a conversation should leave behind: a memory entry, a repo context file, or nothing.",
+  "author": {
+    "name": "Alex Oberneyer"
+  }
+}

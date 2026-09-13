@@ -25,6 +25,15 @@
         "name": "Alex Oberneyer"
       },
       "source": "./plugins/boards"
+    },
+    {
+      "name": "context",
+      "description": "Decide what a conversation should leave behind: a memory entry, a repo context file, or nothing.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Alex Oberneyer"
+      },
+      "source": "./plugins/context"
     }
   ]
 }
