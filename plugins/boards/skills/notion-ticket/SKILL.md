@@ -4,7 +4,7 @@ description: >
   Fetch and display a Notion page by URL or ID, including all properties, full
   page content, and comments. Use when the user wants to read a Notion ticket,
   review a Notion page, or says things like "fetch this Notion page",
-  "read this ticket", "show me this Notion doc", or "/notion-ticket <url>".
+  "read this ticket", "show me this Notion doc", or "/notion-ticket URL".
 ---
 
 # Notion Ticket Fetcher
@@ -14,7 +14,7 @@ Fetch a single Notion page and present its full content for analysis.
 ## Setup
 
 The script needs `NOTION_API_KEY` — either exported in the shell or in a `.env`
-file in the directory Claude is running from.
+file in the working directory.
 
 1. Create an internal integration at <https://www.notion.so/my-integrations>.
 2. Copy its token into `NOTION_API_KEY`.
@@ -23,10 +23,13 @@ file in the directory Claude is running from.
 
 ## Fetch the Page
 
-The user provides a Notion URL or page ID as the argument. Run:
+The user provides a Notion URL or page ID as the argument. Resolve
+`scripts/fetch_notion_page.py` relative to this SKILL.md, following the skill
+folder symlink to its source. Use that absolute script path below and keep the
+working directory unchanged so the existing `.env` lookup still works. Run:
 
 ```bash
-uv run "${CLAUDE_PLUGIN_ROOT}/skills/notion-ticket/scripts/fetch_notion_page.py" "<url-or-id>"
+uv run "<resolved-skill-directory>/scripts/fetch_notion_page.py" "<url-or-id>"
 ```
 
 For a faster fetch without page body: add `--no-content`.

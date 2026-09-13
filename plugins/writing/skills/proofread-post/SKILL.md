@@ -21,7 +21,7 @@ A file path after the slash command. If none is given, ask which file.
 ## What to check
 
 1. **Build-breaking issues** — if the project documents a front matter or
-   publishing format (check its `CLAUDE.md` or `README.md`), verify the file
+   publishing format (check its `AGENTS.md`, `CLAUDE.md`, or `README.md`), verify the file
    conforms; a malformed header usually fails the site build rather than
    degrading gracefully. Also flag empty or placeholder links (`[text]()`,
    `TODO`, `example.com`) and anything that will render wrong.

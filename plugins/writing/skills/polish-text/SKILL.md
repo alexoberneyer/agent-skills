@@ -6,7 +6,7 @@ description: >
   "clean up this message", "structure this", "polish my clipboard", or "/polish-text".
   The user provides raw text (e.g. voice memo transcript, draft message), or provides
   nothing and the text is taken from the clipboard, and gets back a polished version
-  automatically copied to the clipboard.
+  copied to the clipboard when local clipboard access is available.
 ---
 
 # Polish Text
@@ -28,6 +28,10 @@ picked up the right thing. If the clipboard is empty, or its contents are clearl
 not prose (a URL, a file path, a credential, a code snippet), ask the user for the
 text instead of polishing it.
 
+If clipboard access is unavailable, ask for text only when none was supplied.
+Otherwise polish the supplied text and return it for manual copying. Do not claim
+to have read or changed the clipboard without a successful tool result.
+
 ## Instructions
 
 1. **Detect the language** of the input and keep the output in the same language.
@@ -48,4 +52,5 @@ text instead of polishing it.
 4. **Output the polished text** to the user so they can review it.
 5. **Copy to clipboard**: `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard`
    on Linux, `clip` on Windows.
-6. Confirm that the text has been copied to the clipboard.
+6. Confirm copying only after the clipboard command succeeds. If it fails,
+   leave the polished text available and state that it needs manual copying.

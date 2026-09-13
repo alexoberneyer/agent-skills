@@ -1,12 +1,15 @@
 ---
 description: Copy the previous answer to the clipboard
 argument-hint: "[what to copy, if the last message had more than one thing]"
-allowed-tools: Bash(pbcopy:*)
+allowed-tools: Bash(pbcopy:*), Bash(wl-copy:*), Bash(xclip:*), Bash(clip:*)
 ---
 
 # /copy
 
-Copy content from your previous message to the macOS clipboard.
+Copy content from your previous message to the local clipboard when available.
+Use `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard` on Linux, or
+`clip` on Windows. If the environment has no clipboard access, return the
+selected content for manual copying and say it was not copied automatically.
 
 **What to copy:** $ARGUMENTS
 
@@ -33,4 +36,5 @@ pbcopy <<'CLIPEOF'
 CLIPEOF
 ```
 
-Then confirm in one line: what was copied and the character count. No restating the content.
+After a successful clipboard command, confirm in one line what was copied and
+the character count. On failure, return the content for manual copying instead.
