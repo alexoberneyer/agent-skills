@@ -56,6 +56,8 @@ than a missing one, because it loads as truth. Fix these first.
   sensitive and where the file is hosted.
 - **A new file needs an index.** Name the README or list that should mention it.
 - **Update before adding.** Edit the existing entry instead of writing a near-duplicate.
+- **Memory is per agent.** Claude, Codex, pi and omp do not share it. A fact
+  every agent needs goes in `AGENTS.md`, `CLAUDE.md` or a repo file.
 
 ## 5. Propose
 
@@ -73,7 +75,9 @@ Write nothing until the user approves. They may approve a subset: "do 1 and 3".
 
 ## 6. Apply
 
-- Write memory in the format the host's memory instructions define, including
-  the index line.
+- Write memory the way the host defines it, including any index line. If the host
+  forbids editing memory files, use its mechanism instead (Codex: an ad-hoc note).
+  If the host has no memory (pi, or omp without a backend), say so and propose a
+  file instead.
 - Create or edit repo files and update the index named in the proposal.
 - Do not commit. Report the changed paths and `git status` for each repo touched.
