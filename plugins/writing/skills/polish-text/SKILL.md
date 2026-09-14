@@ -35,9 +35,11 @@ to have read or changed the clipboard without a successful tool result.
 ## Instructions
 
 1. **Detect the language** of the input and keep the output in the same language.
-2. **Polish the text** while preserving the original intent, tone, and meaning:
+2. **Read `voice.md`** next to this file. It describes the author's voice, and the
+   polished text follows it.
+3. **Polish the text** while preserving the original intent, tone, and meaning:
    - Fix grammar, spelling, and punctuation
-   - Improve sentence structure and flow
+   - Fix broken sentences and split run-ons
    - Add paragraph breaks for readability
    - Do not use markdown emphasis (`**bold**`, `_italic_`). The output is usually
      pasted into Teams or Slack, which render the markers literally instead of
@@ -45,12 +47,11 @@ to have read or changed the clipboard without a successful tool result.
      one idea per line, key term at the front of the line. If the user asks to
      "keep the markdown" (for Notion, GitHub, a doc), use it as normal.
    - Convert lists or options into numbered/bulleted lists
-   - Remove filler words, false starts, and verbal tics (common in voice transcripts)
-   - Keep the author's voice — don't make it sound robotic or overly formal
-   - **Never use em-dashes (—) in the output.** Use a comma, colon, parentheses, or a period + new sentence instead. This applies to both the text shown to the user and the text copied to the clipboard.
-3. **Do NOT** add new information, change the meaning, or remove important content.
-4. **Output the polished text** to the user so they can review it.
-5. **Copy to clipboard**: `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard`
+   - Remove filler words, false starts, and verbal tics (common in voice transcripts).
+     Keep the spoken markers `voice.md` counts as voice.
+4. **Do NOT** add new information, change the meaning, or remove important content.
+5. **Output the polished text** to the user so they can review it.
+6. **Copy to clipboard**: `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard`
    on Linux, `clip` on Windows.
-6. Confirm copying only after the clipboard command succeeds. If it fails,
+7. Confirm copying only after the clipboard command succeeds. If it fails,
    leave the polished text available and state that it needs manual copying.

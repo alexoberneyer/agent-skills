@@ -39,6 +39,9 @@ you can reply "apply #1 to #3" and decline the rest. It reads the project's
 `AGENTS.md`, `CLAUDE.md` or `README.md` for any front matter or publishing format
 it should check against, so it stays useful across different site generators.
 
+Both skills follow `skills/polish-text/voice.md`, which describes my writing
+voice. If you use them, replace it with yours.
+
 `copy` and `polish-text` use the available local clipboard tool. Without one,
 they return the text for manual copying and never claim clipboard success.
 
