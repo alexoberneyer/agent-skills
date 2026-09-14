@@ -11,7 +11,7 @@
     {
       "name": "writing",
       "description": "Polish raw text into a clean message, proofread posts before publishing, draft messages in your voice, and copy answers to the clipboard.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "author": {
         "name": "Alex Oberneyer"
       },
