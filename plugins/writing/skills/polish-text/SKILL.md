@@ -35,11 +35,9 @@ to have read or changed the clipboard without a successful tool result.
 ## Instructions
 
 1. **Detect the language** of the input and keep the output in the same language.
-2. **Read `voice.md`** next to this file. It describes the author's voice, and the
-   polished text follows it.
-3. **Polish the text** while preserving the original intent, tone, and meaning:
+2. **Polish the text** while preserving the original intent, tone, and meaning:
    - Fix grammar, spelling, and punctuation
-   - Fix broken sentences and split run-ons
+   - Fix sentences the transcription broke
    - Add paragraph breaks for readability
    - Do not use markdown emphasis (`**bold**`, `_italic_`). The output is usually
      pasted into Teams or Slack, which render the markers literally instead of
@@ -48,10 +46,14 @@ to have read or changed the clipboard without a successful tool result.
      "keep the markdown" (for Notion, GitHub, a doc), use it as normal.
    - Convert lists or options into numbered/bulleted lists
    - Remove filler words, false starts, and verbal tics (common in voice transcripts).
-     Keep the spoken markers `voice.md` counts as voice.
-4. **Do NOT** add new information, change the meaning, or remove important content.
-5. **Output the polished text** to the user so they can review it.
-6. **Copy to clipboard**: `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard`
+     Keep phrasing the author uses on purpose, like "whatever" or "That's it."
+   - Keep the author's voice. The text is already theirs, so change only what is
+     broken.
+   - No em-dashes in the output. Do not introduce en-dashes, semicolons, or
+     phrasing like "not just X, but Y".
+3. **Do NOT** add new information, change the meaning, or remove important content.
+4. **Output the polished text** to the user so they can review it.
+5. **Copy to clipboard**: `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard`
    on Linux, `clip` on Windows.
-7. Confirm copying only after the clipboard command succeeds. If it fails,
+6. Confirm copying only after the clipboard command succeeds. If it fails,
    leave the polished text available and state that it needs manual copying.

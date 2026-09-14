@@ -20,7 +20,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `notion-ticket`, `copy-answer`, `keep` and `video`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep` and `video`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -32,6 +32,7 @@ command without duplicating its workflow or shadowing the Claude command name.
 | --- | --- |
 | `/writing:polish-text <text>` | Polishes raw text (voice memo transcript, rough draft) into a clean structured message in the same language, then copies it to the clipboard. |
 | `/writing:proofread-post <file>` | Proofreads a post before publishing and reports findings as a numbered diagnosis. Changes nothing until you ask. |
+| `/writing:draft [recipient]` | Writes a message you send under your own name from whatever the conversation holds: research, an investigation, notes. Keeps the uncertainty the source had, then copies it to the clipboard. |
 | `/writing:copy [what]` | Copies the deliverable out of the agent's previous message to the clipboard. The draft or the snippet, not the commentary wrapped around it. |
 
 `proofread-post` reports mechanical issues first and substantive ones last, so
@@ -39,8 +40,9 @@ you can reply "apply #1 to #3" and decline the rest. It reads the project's
 `AGENTS.md`, `CLAUDE.md` or `README.md` for any front matter or publishing format
 it should check against, so it stays useful across different site generators.
 
-Both skills follow `skills/polish-text/voice.md`, which describes my writing
-voice. If you use them, replace it with yours.
+`draft` follows `skills/draft/voice.md`, which describes my writing voice. If you
+use it, replace that file with yours. `polish-text` and `proofread-post` do not
+load it, because they work on text you already wrote.
 
 `copy` and `polish-text` use the available local clipboard tool. Without one,
 they return the text for manual copying and never claim clipboard success.

@@ -47,10 +47,17 @@ diagnosis. Do not pre-filter down to what they are likely to accept.
 
 ## Rewrites
 
-Offer concrete rewrites inline. Read `../polish-text/voice.md` and write them in
-that voice. It names whose voice it describes. For anyone else's piece, match the
-piece's own voice. A rewrite that dilutes it is a bad rewrite, even when it
-tightens the argument.
+Offer concrete rewrites inline, terse version first.
+
+- Prefer short, aphoristic, loop-closing edits at or below the original word
+  count.
+- Prefer imperatives and call-backs to the opening framing over analytical
+  connective tissue that spells out the mechanism.
+- Match the piece's voice. If it is terse (short paragraphs, one idea per line,
+  no hand-holding), then a rewrite that helps the reader follow the logic but
+  dilutes that voice is a bad rewrite, even when it tightens the argument.
+- Rewrites are your words landing in the author's text. Keep em-dashes,
+  en-dashes and semicolons out of them.
 
 Voice choices (intensifiers, informal subjunctives, sentence fragments) default
 to **keep** unless the author says otherwise.

@@ -1,24 +1,21 @@
 # Voice
 
-How Alex Oberneyer writes. Drawn from his 2026 posts on
-<https://alexoberneyer.github.io> and his edits to agent drafts.
+How Alex Oberneyer writes. The `draft` skill uses it for messages he sends under
+his name. Drawn from his 2026 posts on <https://alexoberneyer.github.io> and his
+edits to agent drafts. If you use this skill yourself, replace this file with a
+description of your voice.
 
-Apply it to text Alex wrote or will send under his name. For anyone else's text,
-match that text's own voice instead. If you use these skills yourself, replace
-this file with a description of your voice.
-
-The rules hold in every language. The examples are English.
+The rules hold in every language. The examples are English blog posts. Messages
+are usually shorter, and often German.
 
 ## Two registers
 
-Keep the register the draft is already in.
+Match the register to the message.
 
-- **Short pieces**, under about 150 words. One claim, a few one-line paragraphs,
-  a closer. `play`, `ownership`, `forrest`, `first-day-of-school`.
-- **Long pieces**, spoken first as voice memos. Headings, first person,
-  conversational, allowed to wander. `absent-minded`, `how-i-currently-write`.
-
-Do not squeeze a long spoken piece into aphorisms. Do not pad a short one.
+- **Short**, the default for messages. One point, a few one-line paragraphs, a
+  closer. The posts `play`, `ownership`, `forrest` and `first-day-of-school`.
+- **Long**, for a write-up the recipient asked for. Headings, first person,
+  conversational. The posts `absent-minded` and `how-i-currently-write`.
 
 ## What the voice does
 
@@ -36,8 +33,8 @@ Do not squeeze a long spoken piece into aphorisms. Do not pad a short one.
 - Sources, caveats and asides go to numbered notes (`[1]`) under `## Notes`.
   Honest caveats about the evidence belong there too: "Sample size is a handful.
   They came to me, not the other way around."
-- Spoken markers stay. "whatever", "So", "That's it.", "The whole nine yards."
-  and `;-)` are voice, not filler.
+- Spoken markers such as "whatever", "So" and "That's it." are part of the
+  voice. Do not sprinkle them in to sound like Alex.
 - Closers are short. An imperative ("Take the experts' advice."), a call-back to
   the opening ("So stop competing. Play."), or a flat stop ("That's it.").
 
@@ -53,17 +50,15 @@ Do not squeeze a long spoken piece into aphorisms. Do not pad a short one.
 - **Sentences that spell out the mechanism** behind a claim the reader already
   gets.
 
-## Editing in this voice
+## Writing in this voice
 
-- Rewrites land at or below the original word count.
+- Shorter than the source. A message carries the conclusion and how sure it is,
+  not the path to it.
 - When offering alternatives, lead with the terse one.
 - Prefer imperatives and call-backs to the opening over analytical connective
   tissue.
 - A sentence that wants an em-dash wants splitting. Swapping in a comma and
   keeping the length is not a fix.
-- Fix errors. Keep quirks: intensifiers ("really"), informal phrasing, fragments.
-- Before handing text back, search it for em-dashes, en-dashes and their HTML
-  entities.
 
 ## Examples
 
