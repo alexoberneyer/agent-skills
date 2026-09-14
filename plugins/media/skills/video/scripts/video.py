@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Download a video, or build a transcript to summarize it.
 
-Standard library only. Shells out to yt-dlp and ffmpeg, and to whisper.cpp's
-whisper-cli for videos without captions. Progress goes to stderr, results to
+Standard library only. Shells out to yt-dlp and ffmpeg, and to mlx-audio (run
+through uvx) for videos without captions. Progress goes to stderr, results to
 stdout.
 
 Usage:
     video.py download URL --name NAME [--dir DIR] [--section START-END]
                                       [--max-mb N] [--item N]
-    video.py transcript URL [--language LANG] [--force-whisper]
-                            [--work-dir DIR] [--model PATH] [--item N]
+    video.py transcript URL [--language LANG] [--force-local]
+                            [--work-dir DIR] [--model REPO] [--item N]
 
 Both commands accept --cookies-from-browser BROWSER for login-walled posts.
 """
@@ -20,6 +20,7 @@ import argparse
 import html
 import json
 import os
+import platform
 import re
 import shlex
 import shutil
@@ -29,15 +30,20 @@ import tempfile
 from collections import deque
 from pathlib import Path
 
-MODEL_NAME = "ggml-large-v3-turbo-q5_0.bin"
-MODEL_URL = f"https://huggingface.co/ggerganov/whisper.cpp/resolve/main/{MODEL_NAME}"
+MLX_AUDIO = "mlx-audio==0.5.3"
+PARAKEET = "mlx-community/parakeet-tdt-0.6b-v3"
+WHISPER = "mlx-community/whisper-large-v3-turbo-asr-fp16"
+MODEL_SIZES = {PARAKEET: "2.4 GB", WHISPER: "1.5 GB"}
+# The languages Parakeet v3 transcribes, from its model card. Whisper takes the rest.
+PARAKEET_LANGUAGES = frozenset(
+    "bg cs da de el en es et fi fr hr hu it lt lv mt nl pl pt ro ru sk sl sv uk".split()
+)
 AUDIO_KBPS = 128
 INSTALL = {
     "yt-dlp": "brew install yt-dlp",
     "ffmpeg": "brew install ffmpeg",
     "ffprobe": "brew install ffmpeg",
-    "whisper-cli": "brew install whisper-cpp",
-    "curl": "brew install curl",
+    "uvx": "brew install uv",
 }
 PLACEHOLDER_EXT = re.compile(
     r"\.(?:<[^>]*>|\[[^\]]*\]|\{[^}]*\}|ext(?:ension)?|file-?(?:extension|ending)"
@@ -164,6 +170,57 @@ def download(args: argparse.Namespace) -> None:
     print(f"size_mb: {path.stat().st_size / 1024 / 1024:.1f}")
 
 
+# --- local transcription --------------------------------------------------------
+
+
+def pick_model(language: str | None, override: str | None = None) -> str:
+    """Parakeet for its languages and for unknown ones, Whisper for everything else."""
+    if override:
+        return override
+    base = language.split("-")[0].lower() if language else None
+    return WHISPER if base and base not in PARAKEET_LANGUAGES else PARAKEET
+
+
+def hub_cached(model: str) -> bool:
+    home = Path(os.environ.get("HF_HOME") or Path.home() / ".cache" / "huggingface")
+    hub = Path(os.environ.get("HF_HUB_CACHE") or home / "hub")
+    return (hub / f"models--{model.replace('/', '--')}").is_dir()
+
+
+def need_local() -> None:
+    if sys.platform != "darwin" or platform.machine() != "arm64":
+        raise Fail("local transcription runs mlx-audio, which needs a Mac with Apple silicon")
+    need("ffmpeg", "uvx")
+
+
+def transcribe_audio(audio: Path, out: Path, language: str | None = None,
+                     model: str | None = None) -> tuple[Path, str]:
+    """Transcribe any audio file ffmpeg reads into <out>.vtt. Returns (vtt, source)."""
+    need_local()
+    chosen = pick_model(language, model)
+    wav = out.parent / f"{out.name}.wav"
+    vtt = out.parent / f"{out.name}.vtt"
+    vtt.unlink(missing_ok=True)
+    cmd = ["uvx", "--from", MLX_AUDIO, "mlx_audio.stt.generate", "--model", chosen,
+           "--audio", str(wav), "--output-path", str(out), "--format", "vtt"]
+    if "parakeet" in chosen:
+        # The default 30 s chunks split words at the boundaries and garble names.
+        cmd += ["--chunk-duration", "120"]
+    elif language:
+        cmd += ["--language", language.split("-")[0].lower()]
+    if not hub_cached(chosen):
+        log(f"downloading {chosen} once ({MODEL_SIZES.get(chosen, 'size unknown')}) from Hugging Face")
+    try:
+        run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(audio),
+             "-vn", "-ac", "1", "-ar", "16000", "-c:a", "pcm_s16le", str(wav)])
+        run(cmd)
+    finally:
+        wav.unlink(missing_ok=True)
+    if not vtt.is_file():
+        raise Fail("mlx-audio finished but wrote no transcript")
+    return vtt, f"mlx-audio ({chosen})"
+
+
 # --- transcript ---------------------------------------------------------------
 
 
@@ -247,50 +304,19 @@ def download_captions(args, info_path: Path, work: Path, track: str, automatic: 
     return next(iter(sorted(work.glob("captions*.vtt"))), None)
 
 
-def model_path(arg: str | None) -> Path:
-    if arg or os.environ.get("WHISPER_MODEL"):
-        return Path(arg or os.environ["WHISPER_MODEL"]).expanduser()
-    cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
-    return cache / "whisper.cpp" / MODEL_NAME
-
-
-def ensure_model(path: Path) -> Path:
-    if path.is_file():
-        return path
-    if path.name != MODEL_NAME:
-        raise Fail(f"whisper model not found: {path}")
-    need("curl")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    part = path.with_name(path.name + ".part")
-    log(f"downloading the whisper model once (574 MB) to {path}")
-    run(["curl", "-L", "--fail", "--silent", "--show-error", "-o", str(part), MODEL_URL])
-    part.replace(path)
-    return path
-
-
-def transcribe(args, info_path: Path, work: Path) -> tuple[Path, str]:
-    need("ffmpeg", "whisper-cli")
-    model = ensure_model(model_path(args.model))
-    for old in [*work.glob("audio.*"), work / "speech.wav"]:
-        old.unlink(missing_ok=True)
+def transcribe(args, info: dict, info_path: Path, work: Path) -> tuple[Path, str]:
+    need_local()
+    for old in work.glob("audio.*"):
+        old.unlink()
     run(ytdlp(args, "--load-info-json", str(info_path), "-f", "ba/b",
               "-o", str(work / "audio.%(ext)s")))
     audio = next(iter(work.glob("audio.*")), None)
     if audio is None:
         raise Fail("yt-dlp finished but saved no audio")
-    wav = work / "speech.wav"
-    run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(audio),
-         "-vn", "-ac", "1", "-ar", "16000", "-c:a", "pcm_s16le", str(wav)])
-    out = work / "whisper"
-    language = (args.language or "auto").split("-")[0]
-    run(["whisper-cli", "-m", str(model), "-f", str(wav), "-l", language,
-         "-sns", "-np", "-ovtt", "-of", str(out)])
-    audio.unlink()
-    wav.unlink()
-    vtt = out.with_suffix(".vtt")
-    if not vtt.is_file():
-        raise Fail("whisper-cli finished but wrote no transcript")
-    return vtt, f"whisper.cpp ({model.name})"
+    try:
+        return transcribe_audio(audio, work / "local", args.language or info.get("language"), args.model)
+    finally:
+        audio.unlink(missing_ok=True)
 
 
 def transcript(args: argparse.Namespace) -> None:
@@ -303,12 +329,12 @@ def transcript(args: argparse.Namespace) -> None:
     info_path.write_text(json.dumps(info), encoding="utf-8")
 
     vtt = source = None
-    track = None if args.force_whisper else pick_captions(info, args.language)
+    track = None if args.force_local else pick_captions(info, args.language)
     if track:
         vtt = download_captions(args, info_path, work, *track)
         source = f"captions ({'auto' if track[1] else 'manual'}, {track[0]})"
     if vtt is None:
-        vtt, source = transcribe(args, info_path, work)
+        vtt, source = transcribe(args, info, info_path, work)
 
     text = vtt_to_text(vtt.read_text(encoding="utf-8"))
     transcript_path = work / "transcript.txt"
@@ -368,12 +394,15 @@ def parser() -> argparse.ArgumentParser:
     down.set_defaults(func=download)
 
     text = commands.add_parser("transcript", parents=[common],
-                               help="build a transcript from captions or whisper.cpp")
-    text.add_argument("--language", help="spoken language, e.g. en or de (default: detect)")
-    text.add_argument("--force-whisper", action="store_true",
+                               help="build a transcript from captions or local transcription")
+    text.add_argument("--language",
+                      help="spoken language, e.g. en or de (default: what the site reports, else detect)")
+    text.add_argument("--force-local", "--force-whisper", dest="force_local", action="store_true",
                       help="transcribe locally even when captions exist")
     text.add_argument("--work-dir", help="where to keep the files (default: a temp folder per video)")
-    text.add_argument("--model", help=f"whisper.cpp model (default: $WHISPER_MODEL or ~/.cache/whisper.cpp/{MODEL_NAME})")
+    text.add_argument("--model",
+                      help=f"Hugging Face model for mlx-audio (default: {PARAKEET}, "
+                           f"or {WHISPER} for languages Parakeet lacks)")
     text.set_defaults(func=transcript)
     return root
 

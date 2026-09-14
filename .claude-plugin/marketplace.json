@@ -37,8 +37,8 @@
     },
     {
       "name": "media",
-      "description": "Download videos and summarize them from YouTube, X, Instagram and other sites, with local transcription when there are no captions.",
-      "version": "0.1.0",
+      "description": "Download and summarize videos from YouTube, X, Instagram and other sites, and transcribe Apple Voice Memos, with local transcription on Apple silicon.",
+      "version": "0.2.0",
       "author": {
         "name": "Alex Oberneyer"
       },

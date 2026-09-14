@@ -1,5 +1,7 @@
 from pathlib import Path
+from unittest import mock
 import importlib.util
+import tempfile
 import unittest
 
 SCRIPT = Path(__file__).resolve().parents[1] / 'plugins/media/skills/video/scripts/video.py'
@@ -74,9 +76,62 @@ class CaptionChoiceTest(unittest.TestCase):
         info = {'automatic_captions': {'af': [{}], 'en': [{}], 'en-orig': [{}]}}
         self.assertEqual(video.pick_captions(info), ('en-orig', True))
 
-    def test_live_chat_and_empty_tracks_mean_whisper(self):
+    def test_live_chat_and_empty_tracks_mean_local_transcription(self):
         self.assertIsNone(video.pick_captions({'subtitles': {'live_chat': [{}]}, 'automatic_captions': {'en': []}}))
         self.assertIsNone(video.pick_captions({}))
+
+class ModelChoiceTest(unittest.TestCase):
+    def test_parakeet_for_its_languages_and_unknown_ones(self):
+        for language in [None, '', 'de', 'en-US', 'uk', 'PT']:
+            self.assertEqual(video.pick_model(language), video.PARAKEET, language)
+
+    def test_whisper_for_languages_parakeet_lacks(self):
+        for language in ['ja', 'zh-Hans', 'hi', 'tr']:
+            self.assertEqual(video.pick_model(language), video.WHISPER, language)
+
+    def test_override_wins(self):
+        self.assertEqual(video.pick_model('ja', 'someone/model'), 'someone/model')
+
+    def test_parakeet_list_has_the_25_model_card_languages(self):
+        self.assertEqual(len(video.PARAKEET_LANGUAGES), 25)
+
+class TranscribeAudioTest(unittest.TestCase):
+    def transcribe(self, language, writes_vtt=True):
+        calls = []
+
+        def fake_run(cmd):
+            calls.append(cmd)
+            if cmd[0] == 'uvx' and writes_vtt:
+                Path(cmd[cmd.index('--output-path') + 1] + '.vtt').write_text('WEBVTT\n')
+            return ''
+
+        with tempfile.TemporaryDirectory() as d, \
+             mock.patch.object(video, 'run', fake_run), \
+             mock.patch.object(video, 'need_local', lambda: None), \
+             mock.patch.object(video, 'hub_cached', lambda model: True):
+            vtt, source = video.transcribe_audio(Path(d) / 'memo.m4a', Path(d) / 'local', language)
+            self.assertEqual(vtt, Path(d) / 'local.vtt')
+        return calls, source
+
+    def test_parakeet_gets_long_chunks_and_no_language(self):
+        (ffmpeg, mlx), source = self.transcribe('de')
+        self.assertEqual(ffmpeg[0], 'ffmpeg')
+        self.assertIn('16000', ffmpeg)
+        self.assertEqual(mlx[mlx.index('--model') + 1], video.PARAKEET)
+        self.assertEqual(mlx[mlx.index('--chunk-duration') + 1], '120')
+        self.assertNotIn('--language', mlx)
+        self.assertIn(video.MLX_AUDIO, mlx)
+        self.assertEqual(source, f'mlx-audio ({video.PARAKEET})')
+
+    def test_whisper_gets_the_language(self):
+        (_, mlx), _ = self.transcribe('ja-JP')
+        self.assertEqual(mlx[mlx.index('--model') + 1], video.WHISPER)
+        self.assertEqual(mlx[mlx.index('--language') + 1], 'ja')
+        self.assertNotIn('--chunk-duration', mlx)
+
+    def test_missing_transcript_fails(self):
+        with self.assertRaisesRegex(video.Fail, 'no transcript'):
+            self.transcribe('de', writes_vtt=False)
 
 class VttTest(unittest.TestCase):
     def test_rolling_captions_collapse_into_minute_paragraphs(self):
