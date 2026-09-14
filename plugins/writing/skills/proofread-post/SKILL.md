@@ -20,29 +20,29 @@ A file path after the slash command. If none is given, ask which file.
 
 ## What to check
 
-1. **Build-breaking issues** — if the project documents a front matter or
-   publishing format (check its `AGENTS.md`, `CLAUDE.md`, or `README.md`), verify the file
-   conforms; a malformed header usually fails the site build rather than
+1. **Build-breaking issues.** If the project documents a front matter or
+   publishing format (check its `AGENTS.md`, `CLAUDE.md`, or `README.md`), verify
+   the file conforms. A malformed header usually fails the site build rather than
    degrading gracefully. Also flag empty or placeholder links (`[text]()`,
    `TODO`, `example.com`) and anything that will render wrong.
-2. **Spelling and typos** — as a table: line · as written · suggested.
+2. **Spelling and typos**, as a table: line · as written · suggested.
 3. **Grammar.**
-4. **Repetition** — repeated terms and repeated sentence shapes, e.g. "It was
+4. **Repetition:** repeated terms and repeated sentence shapes, e.g. "It was
    interesting that X, and it was interesting that Y."
-5. **Logic and facts** — contradictions, non-sequiturs, claims that aren't true.
-6. **Weak arguments** — points that are under-argued, naive, or asserted without
+5. **Logic and facts:** contradictions, non-sequiturs, claims that aren't true.
+6. **Weak arguments:** points that are under-argued, naive, or asserted without
    support.
-7. **The ending** — does it land, or does it trail off?
+7. **The ending.** Does it land, or does it trail off?
 
 ## Report format
 
 Numbered sections, one per issue class, ordered mechanical → substantive exactly
 as above. Skip a section entirely if it's clean, keeping the numbers of the rest
-sequential. The point of the numbering is that the author can reply "apply #1–#3"
-and decline the rest.
+sequential. The point of the numbering is that the author can reply "apply #1 to
+#3" and decline the rest.
 
 Report everything you find. Keep flagging weak or under-argued points **even when
-you expect the author to keep them** — the value of the report is the full
+you expect the author to keep them**. The value of the report is the full
 diagnosis. Do not pre-filter down to what they are likely to accept.
 
 ## Rewrites
@@ -53,9 +53,11 @@ Offer concrete rewrites inline, terse version first.
   count.
 - Prefer imperatives and call-backs to the opening framing over analytical
   connective tissue that spells out the mechanism.
-- Match the piece's voice. If it is terse — short paragraphs, one idea per line,
-  no hand-holding — then a rewrite that helps the reader follow the logic but
+- Match the piece's voice. If it is terse (short paragraphs, one idea per line,
+  no hand-holding), then a rewrite that helps the reader follow the logic but
   dilutes that voice is a bad rewrite, even when it tightens the argument.
+- Rewrites are your words landing in the author's text. Keep em-dashes,
+  en-dashes and semicolons out of them.
 
 Voice choices (intensifiers, informal subjunctives, sentence fragments) default
 to **keep** unless the author says otherwise.
