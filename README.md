@@ -20,7 +20,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep` and `video`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `video` and `voice-memos`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -83,14 +83,26 @@ instead.
 | Command | What it does |
 | --- | --- |
 | `/media:video <url>` | Downloads a video as mp4, or reads it and reports a verdict, key points, weak evidence and what watching adds over the summary. Works for YouTube, X, Instagram and every other site yt-dlp supports. |
+| `/media:voice-memos` | Transcribes Apple Voice Memos recorded on iPhone or Apple Watch, locally on the Mac, without opening Voice Memos. Picks up the memos added since the last run. |
 
 Downloads go to `~/Downloads` under the name you give. Trimming to a section and
 a size limit are optional. Reviews use the video's captions when it has them and
-otherwise transcribe it locally with whisper.cpp.
+otherwise transcribe it locally.
 
-**Setup.** `brew install yt-dlp ffmpeg whisper-cpp`. The first transcription
-downloads a 574 MB model to `~/.cache/whisper.cpp/`. The script uses only the
-Python standard library.
+Local transcription runs [mlx-audio](https://github.com/Blaizzy/mlx-audio)
+through `uvx`, pinned to one version. Parakeet v3 handles its 25 European
+languages and audio in an unknown language. Whisper turbo handles the rest. Each
+model downloads once to the Hugging Face cache: 2.4 GB for Parakeet, 1.5 GB for
+Whisper the first time a video needs it.
+
+`voice-memos` reads the folder macOS syncs memos into,
+`~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings`, and
+remembers what it handled in `~/.local/state/voice-memos/`. macOS guards that
+folder. Give the terminal app that runs your agent Full Disk Access under System
+Settings → Privacy & Security, then restart it.
+
+**Setup.** A Mac with Apple silicon, and `brew install yt-dlp ffmpeg uv`. The
+scripts use only the Python standard library.
 
 ## Local development
 
@@ -100,6 +112,8 @@ take effect without pushing:
 ```
 /plugin marketplace add /path/to/your/clone/agent-skills
 ```
+
+Run the tests with `python3 -m unittest discover tests`.
 
 ## Credits
 
