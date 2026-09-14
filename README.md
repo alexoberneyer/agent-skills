@@ -1,4 +1,4 @@
-# claude-skills
+# agent-skills
 
 Personal [Claude Code](https://claude.com/claude-code) skills and commands,
 packaged as a plugin marketplace. The skills also run in Codex, pi and omp.
@@ -6,7 +6,7 @@ packaged as a plugin marketplace. The skills also run in Codex, pi and omp.
 ## Install
 
 ```
-/plugin marketplace add alexoberneyer/claude-skills
+/plugin marketplace add alexoberneyer/agent-skills
 /plugin install writing@alexoberneyer
 /plugin install boards@alexoberneyer
 /plugin install context@alexoberneyer
@@ -93,7 +93,7 @@ Add your working copy as a marketplace instead of the GitHub source, so edits
 take effect without pushing:
 
 ```
-/plugin marketplace add /path/to/your/clone/claude-skills
+/plugin marketplace add /path/to/your/clone/agent-skills
 ```
 
 ## Credits
