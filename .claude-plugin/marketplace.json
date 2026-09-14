@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Personal Claude Code skills and commands.",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "plugins": [
     {
@@ -34,6 +34,15 @@
         "name": "Alex Oberneyer"
       },
       "source": "./plugins/context"
+    },
+    {
+      "name": "media",
+      "description": "Download videos and summarize them from YouTube, X, Instagram and other sites, with local transcription when there are no captions.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Alex Oberneyer"
+      },
+      "source": "./plugins/media"
     }
   ]
 }

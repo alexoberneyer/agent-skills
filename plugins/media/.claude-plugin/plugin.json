@@ -1,0 +1,8 @@
+{
+  "name": "media",
+  "version": "0.1.0",
+  "description": "Download videos and summarize them from YouTube, X, Instagram and other sites, with local transcription when there are no captions.",
+  "author": {
+    "name": "Alex Oberneyer"
+  }
+}

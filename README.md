@@ -10,6 +10,7 @@ packaged as a plugin marketplace. The skills also run in Codex, pi and omp.
 /plugin install writing@alexoberneyer
 /plugin install boards@alexoberneyer
 /plugin install context@alexoberneyer
+/plugin install media@alexoberneyer
 ```
 
 ## Local Codex, pi and omp
@@ -19,7 +20,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `notion-ticket`, `copy-answer` and `keep`.
+`polish-text`, `proofread-post`, `notion-ticket`, `copy-answer`, `keep` and `video`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -72,6 +73,20 @@ Memory is per agent. Claude Code and Codex each keep their own store, and pi and
 omp have none by default. `keep` sends facts every agent needs to repo files
 instead.
 
+### `media`
+
+| Command | What it does |
+| --- | --- |
+| `/media:video <url>` | Downloads a video as mp4, or reads it and reports a verdict, key points, weak evidence and what watching adds over the summary. Works for YouTube, X, Instagram and every other site yt-dlp supports. |
+
+Downloads go to `~/Downloads` under the name you give. Trimming to a section and
+a size limit are optional. Reviews use the video's captions when it has them and
+otherwise transcribe it locally with whisper.cpp.
+
+**Setup.** `brew install yt-dlp ffmpeg whisper-cpp`. The first transcription
+downloads a 574 MB model to `~/.cache/whisper.cpp/`. The script uses only the
+Python standard library.
+
 ## Local development
 
 Add your working copy as a marketplace instead of the GitHub source, so edits
@@ -93,7 +108,7 @@ rules, and the build-breaking check are additions.
 ```
 .claude-plugin/marketplace.json   # marketplace manifest
 install.sh                        # links skills into ~/.agents/skills
-tests/                            # installer tests
+tests/                            # installer and script tests
 plugins/<name>/
   .claude-plugin/plugin.json      # plugin manifest
   commands/                       # slash commands
