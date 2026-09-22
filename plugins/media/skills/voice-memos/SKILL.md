@@ -34,10 +34,17 @@ the model (2.4 GB), so give the command a long timeout.
 A Mac with Apple silicon, `brew install ffmpeg uv`, and Voice Memos turned on
 under iCloud on the Mac and the phone.
 
-macOS guards the sync folder. When the script says it is blocked, tell the user
-to add the terminal app that runs the agent (Ghostty, Terminal, iTerm) under
-System Settings > Privacy & Security > Full Disk Access, restart it, and run the
-skill again. Do not look for a way around the block.
+macOS guards the sync folder. When the script says it is blocked:
+
+1. If `~/.local/share/voice-memos` exists, rerun with
+   `--dir ~/.local/share/voice-memos`. That is a copy the user's shell refreshes
+   whenever a new terminal opens (see the README). When the memo the user expects
+   is not there, ask them to open a new terminal tab, then run again.
+2. Otherwise tell the user to add the terminal app that runs the agent (Ghostty,
+   Terminal, iTerm) under System Settings > Privacy & Security > Full Disk
+   Access, restart it, and run the skill again.
+
+Do not look for any other way around the block.
 
 ## After transcribing
 

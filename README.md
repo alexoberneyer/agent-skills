@@ -101,6 +101,20 @@ remembers what it handled in `~/.local/state/voice-memos/`. macOS guards that
 folder. Give the terminal app that runs your agent Full Disk Access under System
 Settings → Privacy & Security, then restart it.
 
+An agent that runs outside that terminal cannot read the folder. Rather than
+granting it Full Disk Access too, mirror the memos from your shell. Every new
+Ghostty tab then copies them to `~/.local/share/voice-memos`, and the skill falls
+back to that copy when blocked:
+
+```zsh
+# ~/.zshrc. Only the terminal with Full Disk Access; -a keeps mtimes.
+if [[ $TERM_PROGRAM == ghostty ]]; then
+  rsync -a --delete --include='*.m4a' --include='*.qta' --exclude='*' \
+    ~/Library/Group\ Containers/group.com.apple.VoiceMemos.shared/Recordings/ \
+    ~/.local/share/voice-memos/ >/dev/null 2>&1 &!
+fi
+```
+
 **Setup.** A Mac with Apple silicon, and `brew install yt-dlp ffmpeg uv`. The
 scripts use only the Python standard library.
 
