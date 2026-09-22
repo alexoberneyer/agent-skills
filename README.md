@@ -95,25 +95,26 @@ languages and audio in an unknown language. Whisper turbo handles the rest. Each
 model downloads once to the Hugging Face cache: 2.4 GB for Parakeet, 1.5 GB for
 Whisper the first time a video needs it.
 
-`voice-memos` reads the folder macOS syncs memos into,
+`voice-memos` transcribes a copy of the folder macOS syncs memos into,
 `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings`, and
 remembers what it handled in `~/.local/state/voice-memos/`. macOS guards that
-folder. Give the terminal app that runs your agent Full Disk Access under System
-Settings → Privacy & Security, then restart it.
-
-An agent that runs outside that terminal cannot read the folder. Rather than
-granting it Full Disk Access too, mirror the memos from your shell. Every new
-Ghostty tab then copies them to `~/.local/share/voice-memos`, and the skill falls
-back to that copy when blocked:
+folder, so the agent never reads it. Your terminal copies it instead. Give the
+terminal Full Disk Access under System Settings → Privacy & Security, restart
+it, and add this to `~/.zshrc`:
 
 ```zsh
-# ~/.zshrc. Only the terminal with Full Disk Access; -a keeps mtimes.
+# Ghostty has Full Disk Access. Change the check for another terminal.
+# -a keeps mtimes, which the skill sorts memos by.
 if [[ $TERM_PROGRAM == ghostty ]]; then
   rsync -a --delete --include='*.m4a' --include='*.qta' --exclude='*' \
     ~/Library/Group\ Containers/group.com.apple.VoiceMemos.shared/Recordings/ \
     ~/.local/share/voice-memos/ >/dev/null 2>&1 &!
 fi
 ```
+
+Every new tab refreshes the copy in `~/.local/share/voice-memos`. A memo
+recorded since the last new tab shows up once you open another. The agent needs
+no Full Disk Access, wherever it runs.
 
 **Setup.** A Mac with Apple silicon, and `brew install yt-dlp ffmpeg uv`. The
 scripts use only the Python standard library.

@@ -9,8 +9,9 @@ description: >
 
 # Voice Memos
 
-Memos recorded on iPhone or Apple Watch sync to the Mac through iCloud.
-`scripts/memos.py` reads them from the sync folder and transcribes them locally.
+Memos recorded on iPhone or Apple Watch sync to the Mac through iCloud. The
+user's terminal copies them to `~/.local/share/voice-memos`, and
+`scripts/memos.py` transcribes them from there, locally.
 Resolve it relative to this SKILL.md, following the skill folder symlink to its
 source, and call it by absolute path:
 
@@ -31,20 +32,15 @@ the model (2.4 GB), so give the command a long timeout.
 
 ## Requirements
 
-A Mac with Apple silicon, `brew install ffmpeg uv`, and Voice Memos turned on
-under iCloud on the Mac and the phone.
+A Mac with Apple silicon, `brew install ffmpeg uv`, Voice Memos turned on under
+iCloud on the Mac and the phone, and the mirror set up as the README describes.
 
-macOS guards the sync folder. When the script says it is blocked:
+The script reads only the mirror. macOS guards the Voice Memos sync folder
+itself. Never read it, and do not look for a way around the block.
 
-1. If `~/.local/share/voice-memos` exists, rerun with
-   `--dir ~/.local/share/voice-memos`. That is a copy the user's shell refreshes
-   whenever a new terminal opens (see the README). When the memo the user expects
-   is not there, ask them to open a new terminal tab, then run again.
-2. Otherwise tell the user to add the terminal app that runs the agent (Ghostty,
-   Terminal, iTerm) under System Settings > Privacy & Security > Full Disk
-   Access, restart it, and run the skill again.
-
-Do not look for any other way around the block.
+- The mirror refreshes when the user opens a new terminal tab. When the memo the
+  user expects is missing, ask them to open one, then run again.
+- When the script says the mirror does not exist, point the user to the README.
 
 ## After transcribing
 

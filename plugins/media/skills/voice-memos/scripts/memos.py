@@ -10,6 +10,10 @@ Usage:
 
 Without --last or --since it takes the memos added since the previous run and
 remembers them. The first run takes only the newest memo.
+
+It reads a mirror of the Voice Memos sync folder in ~/.local/share/voice-memos,
+which a terminal with Full Disk Access keeps up to date. The agent never needs
+that access itself.
 """
 
 from __future__ import annotations
@@ -30,13 +34,8 @@ video = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(video)
 Fail, log = video.Fail, video.log
 
-RECORDINGS = Path.home() / "Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings"
+MIRROR = Path.home() / ".local/share/voice-memos"
 AUDIO_SUFFIXES = {".m4a", ".qta"}
-FULL_DISK_ACCESS = (
-    "macOS blocks the Voice Memos folder. Open System Settings > Privacy & Security > "
-    "Full Disk Access, add the terminal app that runs this (Ghostty, Terminal, iTerm), "
-    "restart that app and run again."
-)
 
 
 def state_file() -> Path:
@@ -64,9 +63,10 @@ def list_memos(folder: Path) -> list[Path]:
     try:
         files = [p for p in folder.iterdir() if p.suffix.lower() in AUDIO_SUFFIXES and p.is_file()]
     except PermissionError as error:
-        raise Fail(FULL_DISK_ACCESS) from error
+        raise Fail(f"macOS blocks {folder}. Run without --dir to read the mirror.") from error
     except FileNotFoundError as error:
-        raise Fail(f"{folder} does not exist. Turn on Voice Memos under iCloud in System Settings.") from error
+        raise Fail(f"{folder} does not exist. Set up the Voice Memos mirror from the "
+                   "agent-skills README, then open a new terminal tab.") from error
     return sorted(files, key=lambda p: (p.stat().st_mtime, p.name))
 
 
@@ -154,8 +154,8 @@ def parser() -> argparse.ArgumentParser:
     root.add_argument("--language",
                       help="spoken language, e.g. ja. Only needed outside Parakeet's 25 languages")
     root.add_argument("--model", help=f"Hugging Face model for mlx-audio (default: {video.PARAKEET})")
-    root.add_argument("--dir", default=str(RECORDINGS),
-                      help="folder to read (default: the Voice Memos sync folder)")
+    root.add_argument("--dir", default=str(MIRROR),
+                      help="folder to read (default: the mirror in ~/.local/share/voice-memos)")
     root.add_argument("--dry-run", action="store_true",
                       help="list the memos without transcribing or remembering them")
     return root
