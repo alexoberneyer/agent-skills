@@ -49,15 +49,18 @@ class SelectTest(unittest.TestCase):
         self.assertEqual(memos.select(self.found, everything, since=dt.date(2026, 9, 2)), [self.c, self.b])
 
 class FolderTest(unittest.TestCase):
-    def test_blocked_folder_explains_full_disk_access(self):
+    def test_blocked_folder_points_at_the_mirror(self):
         with mock.patch.object(Path, 'iterdir', side_effect=PermissionError(1, 'Operation not permitted')):
-            with self.assertRaisesRegex(memos.Fail, 'Full Disk Access'):
+            with self.assertRaisesRegex(memos.Fail, 'mirror'):
                 memos.list_memos(Path('/blocked'))
 
-    def test_missing_folder_points_at_icloud(self):
+    def test_missing_mirror_points_at_the_readme(self):
         with tempfile.TemporaryDirectory() as d:
-            with self.assertRaisesRegex(memos.Fail, 'iCloud'):
+            with self.assertRaisesRegex(memos.Fail, 'README'):
                 memos.list_memos(Path(d) / 'missing')
+
+    def test_reads_the_mirror_by_default(self):
+        self.assertEqual(memos.parser().parse_args([]).dir, str(memos.MIRROR))
 
 class RunTest(unittest.TestCase):
     def test_remembers_memos_across_runs(self):
