@@ -69,10 +69,13 @@ dependencies install on first run. No virtualenv to manage.
 
 | Command | What it does |
 | --- | --- |
-| `/context:keep` | Reviews the conversation and proposes what to keep: a memory entry, a repo context file, or nothing. Flags memories the conversation made stale. Writes only after you approve. |
+| `/context:keep` | Reviews the conversation and proposes what to keep: a memory entry, a repo context file, a skill, or nothing. Flags memories the conversation made stale. Writes only after you approve. |
 
-It also triggers on questions like "does any memory need to be updated?". Direct
-orders like "put X in memory" skip the review.
+It also triggers on questions like "does any memory need to be updated?" or
+"should this be a skill?". Direct orders like "put X in memory" skip the review.
+
+It proposes a skill only for a procedure that recurs, starts on a phrase you say
+and took correction to get right. Anything less stays a memory line or a file.
 
 Memory is per agent. Claude Code and Codex each keep their own store, and pi and
 omp have none by default. `keep` sends facts every agent needs to repo files

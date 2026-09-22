@@ -28,8 +28,8 @@
     },
     {
       "name": "context",
-      "description": "Decide what a conversation should leave behind: a memory entry, a repo context file, or nothing.",
-      "version": "0.1.1",
+      "description": "Decide what a conversation should leave behind: a memory entry, a repo context file, a skill, or nothing.",
+      "version": "0.2.0",
       "author": {
         "name": "Alex Oberneyer"
       },
