@@ -81,11 +81,11 @@ def select(memos: list[Path], seen: set[str] | None, last: int | None = None,
     return [m for m in memos if m.name not in seen]
 
 
-def probe(path: Path) -> tuple[str, float | None]:
-    """Local recording time and duration in seconds, from the file's metadata."""
+def probe(path: Path) -> tuple[str, float | None, str]:
+    """Local recording time, duration in seconds and title, from the file's metadata."""
     try:
         data = json.loads(video.run(["ffprobe", "-v", "error", "-show_entries",
-                                     "format=duration:format_tags=creation_time",
+                                     "format=duration:format_tags=creation_time,title",
                                      "-of", "json", str(path)]))
     except (Fail, ValueError):
         data = {}
@@ -95,7 +95,8 @@ def probe(path: Path) -> tuple[str, float | None]:
     except (KeyError, ValueError):
         when = dt.datetime.fromtimestamp(path.stat().st_mtime, dt.timezone.utc)
     seconds = float(fields["duration"]) if fields.get("duration") else None
-    return when.astimezone().strftime("%Y-%m-%d %H:%M"), seconds
+    title = (fields.get("tags") or {}).get("title", "").strip()
+    return when.astimezone().strftime("%Y-%m-%d %H:%M"), seconds, title
 
 
 def transcribe_memo(memo: Path, args: argparse.Namespace) -> dict:
@@ -132,8 +133,10 @@ def transcribe_memos(args: argparse.Namespace) -> None:
     if not args.dry_run:
         video.need_local()
     for memo in chosen:
-        when, seconds = probe(memo)
+        when, seconds, title = probe(memo)
         print(f"memo: {memo.name}")
+        if title:
+            print(f"title: {title}")
         print(f"recorded: {when}")
         if seconds:
             print(f"duration: {video.clock(seconds)}")

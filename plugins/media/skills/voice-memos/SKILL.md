@@ -46,7 +46,8 @@ itself. Never read it, and do not look for a way around the block.
 ## After transcribing
 
 1. Read each **whole** transcript file.
-2. For each memo, give the recording time, then the text. Summarize a long memo
+2. For each memo, give the recording time, then the text. Mention the `title:`
+   only when the user set it: "Recording N" and place names are automatic. Summarize a long memo
    when the user did not ask for the full text.
 3. Then do what the user asked. When they want a message out of it, hand the
    text to the matching skill, for example `polish-text`.
