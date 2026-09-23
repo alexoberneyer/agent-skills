@@ -108,16 +108,25 @@ it, and add this to `~/.zshrc`:
 ```zsh
 # Ghostty has Full Disk Access. Change the check for another terminal.
 # -a keeps mtimes, which the skill sorts memos by.
-if [[ $TERM_PROGRAM == ghostty ]]; then
-  rsync -a --delete --include='*.m4a' --include='*.qta' --exclude='*' \
+# Every new tab runs it silently. Run memosync to see what it copies, or why it
+# fails. Pass -n for a dry run.
+memosync() {
+  rsync -av --delete --include='*.m4a' --include='*.qta' --exclude='*' "$@" \
     ~/Library/Group\ Containers/group.com.apple.VoiceMemos.shared/Recordings/ \
-    ~/.local/share/voice-memos/ >/dev/null 2>&1 &!
+    ~/.local/share/voice-memos/
+}
+if [[ $TERM_PROGRAM == ghostty ]]; then
+  memosync >/dev/null 2>&1 &!
 fi
 ```
 
 Every new tab refreshes the copy in `~/.local/share/voice-memos`. A memo
 recorded since the last new tab shows up once you open another. The agent needs
 no Full Disk Access, wherever it runs.
+
+If a memo never appears, run `memosync` yourself. The tab hook hides rsync's
+output, so a terminal that lost Full Disk Access fails silently and looks like a
+memo that never synced.
 
 **Setup.** A Mac with Apple silicon, and `brew install yt-dlp ffmpeg uv`. The
 scripts use only the Python standard library.

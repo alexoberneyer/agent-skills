@@ -38,8 +38,9 @@ iCloud on the Mac and the phone, and the mirror set up as the README describes.
 The script reads only the mirror. macOS guards the Voice Memos sync folder
 itself. Never read it, and do not look for a way around the block.
 
-- The mirror refreshes when the user opens a new terminal tab. When the memo the
-  user expects is missing, ask them to open one, then run again.
+- The mirror refreshes when the user opens a new terminal tab, or when they run
+  the sync by hand (`memosync` on this Mac). When the memo the user expects is
+  missing, ask for that first.
 - When the script says the mirror does not exist, point the user to the README.
 
 ## After transcribing
@@ -57,3 +58,9 @@ itself. Never read it, and do not look for a way around the block.
   memory.
 - Memos are private. Do not paste them into other tools or files unless the user
   asks.
+- A stale mirror usually means the copy failed, not that the memo is missing.
+  The tab hook discards rsync's output, so failure is silent. An error like
+  `froot_open: ... Operation not permitted` means the terminal lost Full Disk
+  Access. Fix: System Settings, Privacy & Security, Full Disk Access, remove the
+  terminal and add it back, then quit and relaunch it. Do not go looking for the
+  memo until the sync reports success.
