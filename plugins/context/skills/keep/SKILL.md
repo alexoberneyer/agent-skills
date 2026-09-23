@@ -66,7 +66,9 @@ Test it against the skill bar in step 4.
   sensitive and where the file is hosted.
 - **A skill has to earn its place.** Propose one only when all four hold:
   - The user would start it with a phrase you can quote.
-  - It ran at least twice, or the user says it recurs.
+  - It ran at least twice, or the user says it recurs. This conversation shows
+    one run. Check a usage log or session history if the host keeps one,
+    otherwise ask.
   - It took correction this time. The corrections become the skill's rules.
   - An agent can run the steps. Knowledge alone is a memory line or a file.
 
@@ -106,4 +108,9 @@ Write nothing until the user approves. They may approve a subset: "do 1 and 3".
 - Write a skill yourself as a `SKILL.md` shaped like the skills next to it, and
   register it where the proposal said. Do not hand off to a skill-authoring
   skill: not every host has one.
+- A skill added to or changed in a plugin reaches installs only after a
+  version bump. Bump every manifest that carries the version, such as
+  `plugin.json` and the marketplace file.
+- If the repo has an install script that links skills into other agents,
+  name it in the report as the step that makes the skill visible there.
 - Do not commit. Report the changed paths and `git status` for each repo touched.

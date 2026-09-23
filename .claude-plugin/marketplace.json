@@ -29,7 +29,7 @@
     {
       "name": "context",
       "description": "Decide what a conversation should leave behind: a memory entry, a repo context file, a skill, or nothing.",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": {
         "name": "Alex Oberneyer"
       },
