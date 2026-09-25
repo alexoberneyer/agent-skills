@@ -11,6 +11,7 @@ packaged as a plugin marketplace. The skills also run in Codex, pi and omp.
 /plugin install boards@alexoberneyer
 /plugin install context@alexoberneyer
 /plugin install media@alexoberneyer
+/plugin install slides@alexoberneyer
 ```
 
 ## Local Codex, pi and omp
@@ -20,7 +21,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `video` and `voice-memos`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `video`, `voice-memos` and `plain-deck`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -130,6 +131,26 @@ memo that never synced.
 
 **Setup.** A Mac with Apple silicon, and `brew install yt-dlp ffmpeg uv`. The
 scripts use only the Python standard library.
+
+### `slides`
+
+| Command | What it does |
+| --- | --- |
+| `/slides:plain-deck` | Builds a plain HTML slide deck: agrees a slide outline with you first, then builds 16:9 slides with one visual each, screenshots them once and hands back one file. |
+
+The deck is one HTML file. Slides scale to any screen, arrow keys or click
+advance them, and print gives one slide per landscape page. Type comes from
+Google Fonts, so nothing is embedded and the file stays small.
+
+It stops after the outline and waits. That stop is the point: a deck written
+straight through fails on language long before it fails on layout.
+
+The palette is a set of CSS tokens on `:root`. Redefine them in the deck body's
+`<style>` block to theme a deck without touching the skill. If your company has
+its own deck or brand skill, use that one instead of this.
+
+**Setup.** Python 3, and Chrome or Chromium for the screenshot pass. Set
+`CHROME` if it lives somewhere the script does not look.
 
 ## Local development
 
