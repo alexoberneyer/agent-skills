@@ -1,0 +1,76 @@
+<style>
+/* Deck-specific tokens. One colour family per dimension, used the same way on every slide.
+   Redefining the shell's tokens here is how a deck gets its own palette:
+   :root{ --accent:#3b3f6d; --alt:#7a9e7f; --flag:#b4462f; } */
+:root{ --d1:#1b3a58; --d2:#2e5e8c; --d3:#a9c0d3; }
+</style>
+
+<!-- 1 ................................................. title, with a quiet motif -->
+<section class="slide dark title-slide with-motif on">
+  <svg class="title-motif" viewBox="0 0 600 600" aria-hidden="true">
+    <g stroke="#ffffff" stroke-opacity=".28" stroke-width="2" fill="none" stroke-linecap="round">
+      <rect x="90" y="150" width="420" height="236" rx="10"/>
+      <line x1="90" y1="440" x2="380" y2="440"/>
+      <line x1="90" y1="480" x2="300" y2="480"/>
+    </g>
+    <g fill="#ffffff" fill-opacity=".22">
+      <rect x="120" y="182" width="150" height="14" rx="7"/>
+      <rect x="120" y="212" width="110" height="10" rx="5"/>
+      <rect x="330" y="182" width="150" height="172" rx="8"/>
+    </g>
+  </svg>
+  <p class="eyebrow">Example body</p>
+  <h1 style="font-size:7cqw">One idea<br>per slide</h1>
+  <p class="lede" style="margin-top:2.4cqw">Three slides, three layouts. Copy this file and replace the words.</p>
+  <dl class="hero-facts">
+    <div class="fact"><dt>For</dt><dd>whoever is in the room</dd></div>
+    <div class="fact"><dt>Date</dt><dd>September 2026</dd></div>
+  </dl>
+  <div class="accent-bar"></div>
+</section>
+
+<!-- 2 ................................................. split: text left, visual right -->
+<section class="slide">
+  <div class="split">
+    <div class="copy">
+      <p class="eyebrow">The default layout</p>
+      <h2>Text left, visual right</h2>
+      <hr class="rule">
+      <ul class="items">
+        <li><div class="sw" style="background:var(--d1)"></div><div class="t"><b>About 30 words</b><span>The sentence a listener can hold while you talk over it.</span></div></li>
+        <li><div class="sw" style="background:var(--d2)"></div><div class="t"><b>One visual</b><span>It proves the claim on the left. It is not decoration.</span></div></li>
+        <li><div class="sw" style="background:var(--d3)"></div><div class="t"><b>One colour per dimension</b><span>The same meaning keeps the same colour on every slide.</span></div></li>
+      </ul>
+    </div>
+    <div class="viz">
+      <svg viewBox="0 0 560 360" role="img" aria-label="A slide divided into a narrow text column on the left and a wider visual on the right.">
+        <rect x="20" y="20" width="520" height="292" rx="10" fill="#f7f9fa" stroke="#e3e8ec" stroke-width="2"/>
+        <rect x="44" y="48" width="176" height="236" rx="6" fill="#ffffff" stroke="#d5dee6" stroke-width="2"/>
+        <g fill="var(--d3)">
+          <rect x="62" y="74" width="120" height="12" rx="6"/>
+          <rect x="62" y="98" width="140" height="8" rx="4"/>
+          <rect x="62" y="116" width="96" height="8" rx="4"/>
+        </g>
+        <rect x="250" y="48" width="266" height="236" rx="6" fill="var(--d2)"/>
+        <circle cx="383" cy="166" r="58" fill="#ffffff" fill-opacity=".9"/>
+        <text class="display" x="383" y="166" dy=".35em" text-anchor="middle" font-size="17" font-weight="700" fill="var(--d1)">the point</text>
+        <g font-size="14" font-weight="600" fill="#5f6b76" text-anchor="middle">
+          <text x="132" y="332">copy &middot; 40%</text>
+          <text x="383" y="332">visual &middot; 60%</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 3 ................................................. dark close, full width -->
+<section class="slide dark">
+  <p class="eyebrow">What to take away</p>
+  <h2>Say one thing. Show it.</h2>
+  <hr class="rule">
+  <div class="slide-body">
+    <p class="lede" style="font-size:2.2cqw; max-width:58ch">If a slide needs reading twice, it is two slides.</p>
+  </div>
+  <p class="kicker">Plain deck &middot; <strong>One idea per slide.</strong></p>
+  <div class="accent-bar"></div>
+</section>
