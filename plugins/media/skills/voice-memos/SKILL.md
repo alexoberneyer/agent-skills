@@ -65,3 +65,9 @@ itself. Never read it, and do not look for a way around the block.
   Access. Fix: System Settings, Privacy & Security, Full Disk Access, remove the
   terminal and add it back, then quit and relaunch it. Do not go looking for the
   memo until the sync reports success.
+- memosync succeeds but the memo is still missing: iCloud has not delivered it
+  to the Mac yet. None of the Voice Memos apps has a sync button. Run
+  `zsh -ic memosync` yourself to recheck, since it works from an agent shell.
+  If the user can't wait: AirDrop the memo to `~/Downloads`, copy it into a temp
+  folder, and run `memos.py --dir <folder>`. Never drop files into the mirror:
+  memosync runs `--delete`.
