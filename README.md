@@ -21,7 +21,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `video`, `voice-memos` and `plain-deck`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `video`, `article`, `voice-memos` and `plain-deck`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -87,10 +87,10 @@ instead.
 | Command | What it does |
 | --- | --- |
 | `/media:video <url>` | Downloads a video as mp4, or reads it and reports a verdict, key points, weak evidence and what watching adds over the summary. Works for YouTube, X, Instagram and every other site yt-dlp supports. |
-| `/media:article <url>` | Reads an article or blog post and reports a verdict, key points, weak evidence and what the full read adds over the summary. A command, so it runs only when you type it. |
+| `/media:article <url>` | Reads an article or blog post and reports a verdict, key points, weak evidence and what the full read adds over the summary. |
 | `/media:voice-memos` | Transcribes Apple Voice Memos recorded on iPhone or Apple Watch, locally on the Mac, without opening Voice Memos. Picks up the memos added since the last run. |
 
-`article` pulls the text with [trafilatura](https://trafilatura.readthedocs.io) through `uvx`, pinned to one version, and falls back to WebFetch for pages it cannot read. It is a Claude Code command, so Codex, pi and omp do not get it from `install.sh`.
+`article` pulls the text with [trafilatura](https://trafilatura.readthedocs.io) through `uvx`, pinned to one version, and falls back to WebFetch for pages it cannot read.
 
 Downloads go to `~/Downloads` under the name you give. Trimming to a section and
 a size limit are optional. Reviews use the video's captions when it has them and

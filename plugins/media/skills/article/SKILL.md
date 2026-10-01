@@ -1,15 +1,18 @@
 ---
-description: Summarize and review an article or blog post, verdict first
-argument-hint: "<url>"
+name: article
+description: >
+  Summarize and review an article or blog post from a link, verdict first:
+  read, skim or skip, key points and weak evidence. Use when the user shares a
+  link to a text article, post or essay and says "review this article",
+  "summarize this post", "is this worth reading?" or "/article". For video
+  links, use the video skill instead.
 allowed-tools: Bash(uvx --from trafilatura==2.2.0:*), WebFetch
 ---
 
-# /article
+# Article
 
 Read a text article and report whether it is worth reading. For a video link,
-use `/media:video` instead.
-
-**Article:** $ARGUMENTS
+use the video skill instead.
 
 ## Get the text
 
