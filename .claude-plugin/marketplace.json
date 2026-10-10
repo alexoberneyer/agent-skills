@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Personal Claude Code skills and commands.",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "plugins": [
     {
@@ -52,6 +52,12 @@
         "name": "Alex Oberneyer"
       },
       "source": "./plugins/slides"
+    },
+    {
+      "name": "learning",
+      "description": "Build and review scientifically grounded, interactive HTML learning artifacts.",
+      "version": "0.1.0",
+      "source": "./plugins/learning"
     }
   ]
 }

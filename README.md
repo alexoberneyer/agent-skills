@@ -12,6 +12,7 @@ packaged as a plugin marketplace. The skills also run in Codex, pi and omp.
 /plugin install context@alexoberneyer
 /plugin install media@alexoberneyer
 /plugin install slides@alexoberneyer
+/plugin install learning@alexoberneyer
 ```
 
 ## Local Codex, pi and omp
@@ -21,7 +22,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `video`, `article`, `voice-memos` and `plain-deck`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `video`, `article`, `voice-memos` `plain-deck`, `build-learning-artifact` and `review-learning-artifact`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -154,6 +155,28 @@ its own deck or brand skill, use that one instead of this.
 
 **Setup.** Python 3, and Chrome or Chromium for the screenshot pass. Set
 `CHROME` if it lives somewhere the script does not look.
+
+### `learning`
+
+| Skill | What it does |
+| --- | --- |
+| `/learning:build-learning-artifact` | Builds a scientifically grounded, self-contained HTML lesson with a prediction, experiment, explanation and transfer exercises. |
+| `/learning:review-learning-artifact` | Reviews the science, mathematical model, learning experience, accessibility and offline behavior. |
+
+In Codex, use `$build-learning-artifact` or `$review-learning-artifact` after
+running the existing installer. Each folder uses standard `SKILL.md` frontmatter;
+Codex supports the installer's symlinked folders in `~/.agents/skills`.
+See the [official skill documentation](https://learn.chatgpt.com/docs/build-skills).
+
+These skills are generic. Learner profiles, curricula, artifacts and progress
+belong in the destination project. They are never bundled into this plugin.
+Lessons need no hosting, package installation or external assets. Source links
+remain available for further reading when online. Building or reviewing a lesson
+does not authorize publishing it.
+
+**Setup.** No skill-specific runtime dependency. Use the host's browser and
+calculation tools to verify the generated artifact. Review reports distinguish
+completed checks from unavailable checks and learner mastery from build status.
 
 ## Local development
 
