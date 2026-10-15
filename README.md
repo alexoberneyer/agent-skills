@@ -22,7 +22,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `video`, `article`, `voice-memos` `plain-deck`, `build-learning-artifact` and `review-learning-artifact`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `daily-report`, `video`, `article`, `voice-memos`, `plain-deck`, `build-learning-artifact` and `review-learning-artifact`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -72,6 +72,7 @@ dependencies install on first run. No virtualenv to manage.
 | Command | What it does |
 | --- | --- |
 | `/context:keep` | Reviews the conversation and proposes what to keep: a memory entry, a repo context file, a skill, or nothing. Flags memories the conversation made stale. Writes only after you approve. |
+| `/context:daily-report [date]` | Builds a private HTML account of the day's work across Git repositories and Claude, Pi, OMP, and Codex histories. Cited outcomes and explicit coverage gaps. |
 
 It also triggers on questions like "does any memory need to be updated?" or
 "should this be a skill?". Direct orders like "put X in memory" skip the review.
@@ -82,6 +83,18 @@ and took correction to get right. Anything less stays a memory line or a file.
 Memory is per agent. Claude Code and Codex each keep their own store, and pi and
 omp have none by default. `keep` sends facts every agent needs to repo files
 instead.
+
+`daily-report` is self-contained. It bundles its collector and HTML template, with
+no global CLI or dotfiles dependency. Use `/context:daily-report yesterday` in
+Claude, `/skill:daily-report yesterday` in Pi, or `$daily-report yesterday` in
+Codex. Explicit dates and relative dates such as `2 days ago` work too.
+
+**Setup:** Python 3.10+, Git 2.37+, and system IANA time zone data on macOS or Linux.
+Collection is local by default. Optional SSH hosts must be configured explicitly.
+Reports and configuration stay outside this repository. Synthesis sends excerpts
+to your agent's configured model provider. Local artifacts do not imply fully
+local processing. See [the daily-report guide](plugins/context/skills/daily-report/README.md)
+for scope, configuration, and privacy limits.
 
 ### `media`
 

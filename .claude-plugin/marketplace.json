@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Personal Claude Code skills and commands.",
-    "version": "0.4.0"
+    "version": "0.5.0"
   },
   "plugins": [
     {
@@ -28,8 +28,8 @@
     },
     {
       "name": "context",
-      "description": "Decide what a conversation should leave behind: a memory entry, a repo context file, a skill, or nothing.",
-      "version": "0.2.1",
+      "description": "Carry useful context forward and build evidence-linked daily work reports from local repositories and agent histories.",
+      "version": "0.3.1",
       "author": {
         "name": "Alex Oberneyer"
       },
