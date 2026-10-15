@@ -8,6 +8,28 @@ import unittest
 INSTALLER = Path(__file__).resolve().parents[1] / 'install.sh'
 
 class InstallTest(unittest.TestCase):
+    def test_daily_report_installs_as_one_self_contained_skill(self):
+        with tempfile.TemporaryDirectory(prefix='daily report install ') as d:
+            root = Path(d) / 'public checkout'
+            root.mkdir()
+            shutil.copy2(INSTALLER, root / 'install.sh')
+            skill = root / 'plugins/context/skills/daily-report'
+            shutil.copytree(INSTALLER.parent / 'plugins/context/skills/daily-report', skill,
+                            ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+            home = Path(d) / 'home'
+            result = subprocess.run(['bash', str(root / 'install.sh')],
+                                    env={**os.environ, 'HOME': str(home)}, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            installed = home / '.agents/skills/daily-report'
+            self.assertEqual(installed.resolve(), skill.resolve())
+            self.assertTrue((installed / 'scripts/report.py').is_file())
+            self.assertTrue((installed / 'assets/template.html').is_file())
+            instructions = (installed / 'SKILL.md').read_text()
+            for invocation in ('/context:daily-report', '/skill:daily-report', '$daily-report'):
+                self.assertIn(invocation, instructions)
+            self.assertFalse((home / '.claude/skills/daily-report').exists())
+            self.assertFalse((home / '.local/bin/daily-report').exists())
+
     def test_spaces_idempotence_and_conflict_preservation(self):
         with tempfile.TemporaryDirectory(prefix='skill install ') as d:
             root = Path(d) / 'source'; root.mkdir()
