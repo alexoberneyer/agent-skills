@@ -1,0 +1,3 @@
+interface:
+  display_name: "Analyze Music Taste"
+  short_description: "Analyze music listening history and changes over time"

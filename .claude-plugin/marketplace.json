@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Personal Claude Code skills and commands.",
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "plugins": [
     {
@@ -58,6 +58,15 @@
       "description": "Build and review scientifically grounded, interactive HTML learning artifacts.",
       "version": "0.1.0",
       "source": "./plugins/learning"
+    },
+    {
+      "name": "music",
+      "description": "Analyze personal listening exports and match live music events to a private taste profile.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Alex Oberneyer"
+      },
+      "source": "./plugins/music"
     }
   ]
 }

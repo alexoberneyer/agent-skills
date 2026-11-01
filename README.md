@@ -13,6 +13,7 @@ packaged as a plugin marketplace. The skills also run in Codex, pi and omp.
 /plugin install media@alexoberneyer
 /plugin install slides@alexoberneyer
 /plugin install learning@alexoberneyer
+/plugin install music@alexoberneyer
 ```
 
 ## Local Codex, pi and omp
@@ -22,7 +23,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `daily-report`, `video`, `article`, `voice-memos`, `plain-deck`, `build-learning-artifact` and `review-learning-artifact`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `daily-report`, `video`, `article`, `voice-memos`, `plain-deck`, `build-learning-artifact`, `review-learning-artifact`, `analyze-music-taste` and `recommend-music-events`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -168,6 +169,17 @@ its own deck or brand skill, use that one instead of this.
 
 **Setup.** Python 3, and Chrome or Chromium for the screenshot pass. Set
 `CHROME` if it lives somewhere the script does not look.
+
+### `music`
+
+| Skill | What it does |
+| --- | --- |
+| `/music:analyze-music-taste` | Analyzes an offline personal Spotify history export (and optional saved-library export), comparing overall, 1-, 7-, 30- and 90-day listening. Creates a versioned private taste profile and report. |
+| `/music:recommend-music-events` | Searches verified event listings, then ranks concerts, festivals and club nights by exact artist matches in the private taste profile. |
+
+**Privacy and limitations.** Both use Python 3.10+ without third-party libraries or Spotify API credentials. Listening analysis consumes a user-supplied export. Reports, raw history, taste profiles, and candidate events stay outside this public repository (suggested location: `~/.local/share/music/`). The event skill uses current web or approved connector searches when available, or a private source-backed events JSON supplied by the user; its ranking script does not fetch live events itself. Matches are based on direct artist names, not inferred genres or musical similarity, and same-city results without known distance are not guaranteed to lie within a radius.
+
+In Codex run `$analyze-music-taste` and `$recommend-music-events`; in Pi or OMP run `/skill:analyze-music-taste` and `/skill:recommend-music-events`. The local installer symlinks both Skills automatically. See each Skill's `SKILL.md` for CLI examples. No scheduling is enabled by installation.
 
 ### `learning`
 
