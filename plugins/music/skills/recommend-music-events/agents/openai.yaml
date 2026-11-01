@@ -1,0 +1,3 @@
+interface:
+  display_name: "Recommend Music Events"
+  short_description: "Find nearby concerts and club nights from a music taste profile"

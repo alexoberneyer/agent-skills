@@ -1,0 +1,8 @@
+{
+  "name": "music",
+  "version": "0.1.0",
+  "description": "Analyze personal listening exports and discover source-backed music events using private taste profiles.",
+  "author": {
+    "name": "Alex Oberneyer"
+  }
+}
