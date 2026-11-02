@@ -52,8 +52,12 @@ PLACEHOLDER_EXT = re.compile(
 )
 SECTION = re.compile(r"^\d[\d:.]*-(?:\d[\d:.]*|inf)$")
 CUE_TIMING = re.compile(r"^(?:(\d+):)?(\d{1,2}):(\d{2})[.,]\d{3}\s+-->")
+# YouTube answers HTTP 403 on its separate video and audio streams when yt-dlp
+# has no PO token. A logged-in browser also gets the HLS stream, which the
+# default format choice then picks and which still downloads.
 LOGIN_HINT = re.compile(
-    r"sign in|log ?in|cookies|authenticat|age.restricted|nsfw|private", re.IGNORECASE
+    r"sign in|log ?in|cookies|authenticat|age.restricted|nsfw|private|HTTP Error 403",
+    re.IGNORECASE,
 )
 
 
@@ -143,12 +147,16 @@ def shrink(path: Path, max_mb: float) -> None:
     )
 
 
+def files_named(folder: Path, name: str) -> list[Path]:
+    return sorted(p for p in folder.iterdir() if p.name.split(".")[0] == name)
+
+
 def download(args: argparse.Namespace) -> None:
     need("yt-dlp", "ffmpeg")
     name = normalize_name(args.name)
     folder = Path(args.dir).expanduser()
     folder.mkdir(parents=True, exist_ok=True)
-    taken = sorted(p for p in folder.iterdir() if p.name.split(".")[0] == name)
+    taken = files_named(folder, name)
     if taken:
         raise Fail(f"{taken[0]} already exists. Pick another --name.")
     cmd = ytdlp(
@@ -163,7 +171,14 @@ def download(args: argparse.Namespace) -> None:
         if not SECTION.match(args.section):
             raise Fail(f"--section must look like 0-75 or 1:30-2:45, got {args.section!r}")
         cmd += ["--download-sections", f"*{args.section}", "--force-keyframes-at-cuts"]
-    path = Path(run(cmd + [args.url]).strip().splitlines()[-1])
+    try:
+        out = run(cmd + [args.url])
+    except Fail:
+        # None of these existed before. Without this the retry stops at "already exists".
+        for partial in files_named(folder, name):
+            partial.unlink(missing_ok=True)
+        raise
+    path = Path(out.strip().splitlines()[-1])
     if args.max_mb:
         shrink(path, args.max_mb)
     print(f"saved: {path}")

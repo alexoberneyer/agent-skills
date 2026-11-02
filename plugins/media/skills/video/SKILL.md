@@ -41,6 +41,10 @@ python3 ".../video.py" download "<url>" --name "<name>"
 - Pass the name as the user wrote it. Placeholders like `name.<extension>` or
   `name.[ext]` mean "use the real extension", and the script strips them.
 - It refuses to overwrite. Ask for another name.
+- A failed download deletes its partial files, so a retry can reuse the name.
+- YouTube answers HTTP 403 to anonymous downloads that lack a PO token. With
+  cookies yt-dlp also gets the HLS stream, which downloads. See Login-walled
+  posts.
 - `--section 0-75` or `--section 1:30-2:45` keeps only that part.
 - `--max-mb 100` re-encodes when the file is larger.
 - `--item 2` picks the second video of a post with several.
@@ -101,6 +105,7 @@ Paraphrase. Quote short phrases only, never long stretches of transcript.
 
 ## Login-walled posts
 
-When yt-dlp reports that a login is needed, ask the user which browser they are
-signed in with, then retry with `--cookies-from-browser <browser>`. Reading
+When yt-dlp reports that a login is needed, or a YouTube download fails with
+403, ask the user which browser they are signed in with, then retry with
+`--cookies-from-browser <browser>`. Reading
 browser cookies can trigger a keychain prompt.
