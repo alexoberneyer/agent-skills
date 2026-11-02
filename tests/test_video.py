@@ -140,6 +140,31 @@ class VttTest(unittest.TestCase):
     def test_cue_numbers_hours_and_later_repeats(self):
         self.assertEqual(video.vtt_to_text(NUMBERED), '[1:02:00] yes one two three yes 42')
 
+FORBIDDEN = 'ERROR: unable to download video data: HTTP Error 403: Forbidden'
+
+class DownloadFailureTest(unittest.TestCase):
+    def test_403_asks_for_a_login(self):
+        failed = mock.Mock(returncode=1, stderr=FORBIDDEN, stdout='')
+        with mock.patch.object(video.subprocess, 'run', return_value=failed), \
+             mock.patch.object(video, 'log'):
+            with self.assertRaisesRegex(video.Fail, 'cookies-from-browser'):
+                video.run(['yt-dlp', 'https://youtu.be/x'])
+
+    def test_failed_download_removes_its_partial_files(self):
+        def fake_run(cmd):
+            folder = Path(cmd[cmd.index('-o') + 1]).parent
+            (folder / 'clip.f137.mp4').write_text('half a download')
+            raise video.Fail(FORBIDDEN)
+
+        with tempfile.TemporaryDirectory() as d, \
+             mock.patch.object(video, 'run', fake_run), \
+             mock.patch.object(video, 'need', lambda *tools: None):
+            (Path(d) / 'other.mp4').write_text('keep me')
+            args = video.parser().parse_args(['download', 'https://youtu.be/x', '--name', 'clip', '--dir', d])
+            with self.assertRaises(video.Fail):
+                video.download(args)
+            self.assertEqual(sorted(p.name for p in Path(d).iterdir()), ['other.mp4'])
+
 class HelpersTest(unittest.TestCase):
     def test_clock(self):
         self.assertEqual(video.clock(59), '0:59')
