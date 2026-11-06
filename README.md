@@ -23,7 +23,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `daily-report`, `video`, `article`, `voice-memos`, `plain-deck`, `build-learning-artifact`, `review-learning-artifact`, `analyze-music-taste` and `recommend-music-events`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `daily-report`, `video`, `article`, `voice-memos`, `demo-gif`, `plain-deck`, `build-learning-artifact`, `review-learning-artifact`, `analyze-music-taste` and `recommend-music-events`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -104,6 +104,9 @@ for scope, configuration, and privacy limits.
 | `/media:video <url>` | Downloads a video as mp4, or reads it and reports a verdict, key points, weak evidence and what watching adds over the summary. Works for YouTube, X, Instagram and every other site yt-dlp supports. |
 | `/media:article <url>` | Reads an article or blog post and reports a verdict, key points, weak evidence and what the full read adds over the summary. |
 | `/media:voice-memos` | Transcribes Apple Voice Memos recorded on iPhone or Apple Watch, locally on the Mac, without opening Voice Memos. Picks up the memos added since the last run. |
+| `/media:demo-gif` | Records a terminal or TUI demo as a GIF with VHS, using sample data only, checks every frame for private data and hosts it for a README. |
+
+`demo-gif` needs [VHS](https://github.com/charmbracelet/vhs) (`brew install vhs`) and ffmpeg. It records sample data only and never publishes without asking.
 
 `article` pulls the text with [trafilatura](https://trafilatura.readthedocs.io) through `uvx`, pinned to one version, and falls back to WebFetch for pages it cannot read.
 
