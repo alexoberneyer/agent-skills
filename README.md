@@ -81,9 +81,11 @@ It also triggers on questions like "does any memory need to be updated?" or
 It proposes a skill only for a procedure that recurs, starts on a phrase you say
 and took correction to get right. Anything less stays a memory line or a file.
 
-Memory is per agent. Claude Code and Codex each keep their own store, and pi and
-omp have none by default. `keep` sends facts every agent needs to repo files
-instead.
+Memory depends on the host's configured backend. Stores may be separate,
+shared or absent. `keep` checks scope, write permissions and destination
+visibility. Facts every agent needs go in explicitly shared memory or suitable
+repo context. Private facts stay in approved private storage, never a public
+checkout.
 
 `daily-report` is self-contained. It bundles its collector and HTML template, with
 no global CLI or dotfiles dependency. Use `/context:daily-report yesterday` in

@@ -58,12 +58,12 @@ Test it against the skill bar in step 4.
 | Skill | A procedure that recurs, starts on a phrase the user says, and took correction to get right | Single facts, preferences, one-off tasks |
 | Nowhere | Only this task needs it, or it is already covered | |
 
-- **Memory loads into every session.** Each line costs context in unrelated work.
-  When a topic has detail, put the detail in a file and give memory one line that
-  points to it.
-- **Sensitive data** (health, finances, other people's private details) goes in a
-  file, never in memory unless it changes how the agent works. Say what is
-  sensitive and where the file is hosted.
+- **Memory scope depends on the host.** Entries may load globally or only for a
+  project. Keep them short and link to detail.
+- **Sensitive data** (health, finances, other people's private details) needs a
+  private destination. Use a file unless it changes how the agent works. Check
+  visibility before proposing it. Never put private facts in a public checkout,
+  even in ignored files. If no approved private destination exists, ask.
 - **A skill has to earn its place.** Propose one only when all four hold:
   - The user would start it with a phrase you can quote.
   - It ran at least twice, or the user says it recurs. This conversation shows
@@ -80,8 +80,10 @@ Test it against the skill bar in step 4.
 - **A new file or skill needs an index.** Name the README, list, manifest or
   install step that should mention it.
 - **Update before adding.** Edit the existing entry instead of writing a near-duplicate.
-- **Memory is per agent.** Claude, Codex, pi and omp do not share it. A fact
-  every agent needs goes in `AGENTS.md`, `CLAUDE.md` or a repo file.
+- **Memory is host-configured.** Check the declared store, project scope and
+  write permissions. Agents may share a store. Do not create a duplicate.
+  Facts every agent needs belong in shared context or repo files with suitable
+  visibility unless the hosts explicitly share the relevant memory.
 
 ## 5. Propose
 
@@ -100,10 +102,9 @@ Write nothing until the user approves. They may approve a subset: "do 1 and 3".
 
 ## 6. Apply
 
-- Write memory the way the host defines it, including any index line. If the host
-  forbids editing memory files, use its mechanism instead (Codex: an ad-hoc note).
-  If the host has no memory (pi, or omp without a backend), say so and propose a
-  file instead.
+- Use the host's declared memory mechanism and write permissions, including any
+  index line. Do not infer support or isolation from the agent's name. If no
+  backend is available, propose a file with suitable visibility instead.
 - Create or edit repo files and update the index named in the proposal.
 - Write a skill yourself as a `SKILL.md` shaped like the skills next to it, and
   register it where the proposal said. Do not hand off to a skill-authoring
