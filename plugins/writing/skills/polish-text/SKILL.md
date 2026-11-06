@@ -54,6 +54,11 @@ to have read or changed the clipboard without a successful tool result.
 3. **Do NOT** add new information, change the meaning, or remove important content.
 4. **Output the polished text** to the user so they can review it.
 5. **Copy to clipboard**: `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard`
-   on Linux, `clip` on Windows.
-6. Confirm copying only after the clipboard command succeeds. If it fails,
-   leave the polished text available and state that it needs manual copying.
+   on Linux, `clip` on Windows. Keep independent messages separate. For a
+   clipboard-history batch with confirmed history support, copy each message
+   individually in source order, not as one joined block. If history support is
+   unavailable or unknown, leave each message separately copyable instead of
+   serially overwriting the clipboard.
+6. Confirm each copy only after its clipboard command succeeds. A successful
+   write does not prove that clipboard history captured it. If a copy fails,
+   leave that polished text available and state that it needs manual copying.
