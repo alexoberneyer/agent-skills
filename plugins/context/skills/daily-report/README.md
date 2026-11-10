@@ -57,6 +57,40 @@ than fixed 24-hour windows. Future dates are allowed and normally have no eviden
 The HTML date selector and agent dropdown show all three native command syntaxes
 above. An offline file cannot run collection.
 
+### Collection-only history for `keep weekly`
+
+The `keep` skill uses this same runtime, without running the daily-report flow:
+
+```bash
+python3 -B "$REPORT" history
+python3 -B "$REPORT" history --start "<returned-start>" --end "<returned-end>" \
+  --snapshot "<returned-snapshot>" --offset <next_offset>
+```
+
+The first call freezes an end timestamp and defaults to the preceding seven
+24-hour periods. An explicit `--start` and `--end` selects another half-open
+window. Both require timezone-aware ISO timestamps. Reuse the returned window
+and snapshot on every continuation. A changed snapshot stops pagination rather
+than silently skipping or repeating shifted items. Restart from offset zero
+with the same window if needed.
+
+This command reads only local Claude, Pi and OMP JSONL histories, including
+nested subagents and older resumed sessions. It honors the source-directory
+environment overrides below, but does not read daily-report configuration or
+collect Codex histories, Git evidence or SSH hosts. Output is JSON to stdout,
+at most 20,000 UTF-8 bytes plus a newline per page. No reports, caches or other
+artifacts are written. Use `-B` to avoid Python bytecode writes.
+
+Items inventory source roots and every JSONL file, access/format issues, selected
+sessions and full user/assistant text. Long text spans numbered parts without
+clipping. Identical message copies are deduplicated. Read every part and page
+before claiming full coverage. `context_only` marks some injected/delegated
+messages, not every case. User role alone does not prove human authorship.
+No tool output, thinking or attachments are exported. Prompt indexes such as
+Claude's `history.jsonl` and OMP's SQLite index are identified but not parsed.
+Index-only and deleted transcripts remain gaps. As with reports, reading the
+excerpts into an agent sends them to its configured model provider.
+
 ## Configuration and discovery
 
 Configuration is optional and private: `~/.config/daily-report/config.json`.

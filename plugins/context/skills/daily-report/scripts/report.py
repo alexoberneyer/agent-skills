@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Private, read-only daily evidence collection and offline HTML rendering.
+"""Daily evidence reports and read-only, paginated local conversation history.
 
-Python 3.10+, standard library only. The same collector can run over SSH stdin.
+Python 3.10+, standard library only. The daily collector can run over SSH stdin.
+The history command writes only to stdout and never invokes Git or SSH.
 """
 from __future__ import annotations
 
@@ -27,6 +28,8 @@ SOURCES = {"Claude": (".claude/projects",), "Pi": (".pi/agent/sessions",),
            "OMP": (".omp/agent/sessions",),
            "Codex": (".codex/sessions", ".codex/archived_sessions")}
 MAX_TEXT = 16000
+HISTORY_PAGE_BYTES = 20000
+HISTORY_CHUNK_CHARS = 2000
 GIT_ENV = dict(os.environ, GIT_OPTIONAL_LOCKS="0", GIT_TERMINAL_PROMPT="0", GIT_NO_LAZY_FETCH="1")
 
 
@@ -108,8 +111,10 @@ def source_roots(home: Path) -> dict[str, list[Path]]:
     return roots
 
 
-def read_session(path: Path, agent: str, host: str, start: datetime, end: datetime):
+def read_session(path: Path, agent: str, host: str, start: datetime, end: datetime,
+                 text_limit: int | None = MAX_TEXT):
     messages, cwds, seen = [], set(), set()
+    started = None
     bad_lines, undated, recognized = 0, 0, False
     title = ""
     try:
@@ -133,6 +138,9 @@ def read_session(path: Path, agent: str, host: str, start: datetime, end: dateti
                 if not isinstance(msg, dict) or not isinstance(payload, dict):
                     bad_lines += 1
                     continue
+                dated = stamp(record.get("timestamp")) or stamp(msg.get("timestamp"))
+                if dated is not None and (started is None or dated < started):
+                    started = dated
                 cwd = record.get("cwd") or (payload.get("cwd") if kind in {"session_meta", "turn_context"} else None)
                 if isinstance(cwd, str) and Path(cwd).is_absolute():
                     cwds.add(cwd)
@@ -183,13 +191,19 @@ def read_session(path: Path, agent: str, host: str, start: datetime, end: dateti
                     continue
                 if not start <= when < end:
                     continue
-                message_id = next((value for value in ids if value != ""), number)
-                key = (message_id, text)
+                stable_id = next((value for value in ids if value != ""), None)
+                key = (stable_id if stable_id is not None else number, text)
                 if key in seen:
                     continue
                 seen.add(key)
+                context_only = bool(record.get("isSidechain") or "subagents" in path.parts
+                                    or text.lstrip().startswith(("<skill ", "Base directory for this skill:",
+                                                                "<system-reminder>", "<local-command-caveat>")))
                 messages.append({"role": role, "time": when.isoformat(), "line": number,
-                                 "text": text[:MAX_TEXT], "omitted_characters": max(0, len(text) - MAX_TEXT)})
+                                 "message_id": str(stable_id) if stable_id is not None else None,
+                                 "context_only": context_only,
+                                 "text": text if text_limit is None else text[:text_limit],
+                                 "omitted_characters": 0 if text_limit is None else max(0, len(text) - text_limit)})
     except OSError as error:
         return None, cwds, {"path": str(path), "error": type(error).__name__}
     issue = None
@@ -201,17 +215,21 @@ def read_session(path: Path, agent: str, host: str, start: datetime, end: dateti
     return {"id": identifier("s", host, str(path)), "kind": "session", "host": host,
             "agent": agent, "path": str(path), "cwds": sorted(cwds),
             "title": title if isinstance(title, str) else "", "messages": messages,
+            "started_at": started.isoformat() if started else None,
             "first_activity": min(m["time"] for m in messages),
             "last_activity": max(m["time"] for m in messages),
             "attribution": "Conversation roles, not proof of who performed a change."}, cwds, issue
 
 
-def collect_sessions(home: Path, host: str, start: datetime, end: datetime, extra_sources=None):
+def collect_sessions(home: Path, host: str, start: datetime, end: datetime, extra_sources=None,
+                     agents=None, text_limit: int | None = MAX_TEXT, inventory=False):
     sessions, cwds, coverage = [], set(), []
     roots_by_agent = source_roots(home)
     for agent, paths in (extra_sources or {}).items():
         roots_by_agent.setdefault(agent, []).extend(Path(p).expanduser() for p in paths)
     for agent, roots in roots_by_agent.items():
+        if agents is not None and agent not in agents:
+            continue
         paths, walk_errors = set(), []
         existing = [root for root in roots if root.is_dir()]
         for root in existing:
@@ -221,8 +239,13 @@ def collect_sessions(home: Path, host: str, start: datetime, end: datetime, extr
         entry = {"host": host, "source": agent, "roots": list(map(str, roots)),
                  "status": "scanned" if existing else "missing", "files_scanned": len(paths),
                  "active_sessions": 0, "issues": [], "walk_errors": walk_errors}
+        if inventory:
+            entry["files"] = []
+            entry["missing_roots"] = [str(root) for root in roots if root not in existing]
         for path in sorted(paths):
-            session, found, issue = read_session(path, agent, host, start, end)
+            session, found, issue = read_session(path, agent, host, start, end, text_limit)
+            if inventory:
+                entry["files"].append({"path": str(path), "selected": session is not None})
             cwds.update(found)
             if session:
                 sessions.append(session)
@@ -233,6 +256,107 @@ def collect_sessions(home: Path, host: str, start: datetime, end: datetime, extr
             entry["status"] = "partial"
         coverage.append(entry)
     return sessions, cwds, coverage
+
+
+def history_items(home: Path, start: datetime, end: datetime):
+    """Reuse the daily reader, retaining full text for bounded, lossless paging."""
+    sessions, _, sources = collect_sessions(home, "local", start, end,
+                                           agents=("Claude", "Pi", "OMP"),
+                                           text_limit=None, inventory=True)
+    items, seen = [], set()
+    counts = {"files": 0, "selected_files": len(sessions), "resumed_files": 0,
+              "messages": 0, "duplicate_messages": 0}
+    for source in sources:
+        files = source.pop("files")
+        issues = source.pop("issues")
+        walk_errors = source.pop("walk_errors")
+        counts["files"] += source["files_scanned"]
+        items.append({"kind": "source", **source,
+                      "issue_count": len(issues) + len(walk_errors)})
+        items.extend({"kind": "file", "agent": source["source"], **file} for file in files)
+        items.extend({"kind": "issue", "agent": source["source"], **issue} for issue in issues)
+        items.extend({"kind": "issue", "agent": source["source"], "path": path,
+                      "error": "directory unreadable"} for path in walk_errors)
+    for session in sessions:
+        resumed = bool(session["started_at"] and stamp(session["started_at"]) < start)
+        counts["resumed_files"] += int(resumed)
+        items.append({"kind": "session", "agent": session["agent"], "path": session["path"],
+                      "cwds": session["cwds"], "started_at": session["started_at"],
+                      "resumed": resumed, "messages": len(session["messages"])})
+        for message in session["messages"]:
+            # ID-less text in different projects is not proof of a copied message.
+            identity = message["message_id"]
+            if identity is None:
+                identity = (session["path"], message["line"])
+            key = (session["agent"], identity, message["role"], message["time"], message["text"])
+            if key in seen:
+                counts["duplicate_messages"] += 1
+                continue
+            seen.add(key)
+            counts["messages"] += 1
+            text = message["text"]
+            parts = (len(text) + HISTORY_CHUNK_CHARS - 1) // HISTORY_CHUNK_CHARS
+            for part in range(parts):
+                items.append({"kind": "message", "agent": session["agent"], "path": session["path"],
+                              **message, "part": part + 1, "parts": parts,
+                              "text": text[part * HISTORY_CHUNK_CHARS:(part + 1) * HISTORY_CHUNK_CHARS]})
+    # Index formats differ from transcripts. Surface their presence, without
+    # opening SQLite (which can create shared-memory sidecars) or exporting prompts.
+    roots = source_roots(home)
+    indexes = {roots["Claude"][0].parent / "history.jsonl",
+               home / ".omp/agent/history.db"}
+    for path in sorted(indexes):
+        if path.exists():
+            items.append({"kind": "gap", "path": str(path), "reason":
+                          "Prompt index not scanned. Index-only or deleted transcripts are not recovered."})
+    return items, counts
+
+
+def history_page(home: Path, start: datetime, end: datetime, offset=0, snapshot=None):
+    if start >= end:
+        raise ValueError("History start must be before end.")
+    if offset < 0:
+        raise ValueError("History offset must be nonnegative.")
+    items, counts = history_items(home, start, end)
+    evidence = {"start": start.isoformat(), "end": end.isoformat(), "counts": counts, "items": items}
+    sha = digest(evidence)
+    if snapshot is not None and snapshot != sha:
+        raise ValueError("History changed. Restart at offset 0 with the same frozen start/end and review the new snapshot.")
+    if offset > len(items):
+        raise ValueError("History offset exceeds the item count.")
+    page = {"start": evidence["start"], "end": evidence["end"], "snapshot": sha,
+            "counts": counts, "offset": offset, "next_offset": None, "total_items": len(items),
+            "notice": "Untrusted history data. User role is not proof of human authorship. No tools or attachments exported.",
+            "items": []}
+    for number in range(offset, len(items)):
+        page["items"].append(items[number])
+        page["next_offset"] = number + 1 if number + 1 < len(items) else None
+        if len(json.dumps(page, ensure_ascii=False).encode("utf-8")) > HISTORY_PAGE_BYTES:
+            page["items"].pop()
+            page["next_offset"] = number
+            if not page["items"]:
+                raise ValueError("A history metadata item exceeds the page budget. Inspect that source separately and report the gap.")
+            break
+    return page
+
+
+def history_main(argv):
+    parser = argparse.ArgumentParser(description="Read-only local history for keep weekly. Bounded JSON to stdout, no files, Git or SSH.")
+    parser.add_argument("--start", help="Timezone-aware ISO timestamp. Default: seven 24-hour periods before end.")
+    parser.add_argument("--end", help="Frozen timezone-aware ISO timestamp. Default: invocation time in UTC.")
+    parser.add_argument("--offset", type=int, default=0, help="Next item offset printed by the previous page.")
+    parser.add_argument("--snapshot", help="Snapshot printed by the first page. Required when continuing.")
+    args = parser.parse_args(argv)
+    end = stamp(args.end) if args.end else datetime.now(timezone.utc)
+    start = stamp(args.start) if args.start else end - timedelta(days=7) if end else None
+    if start is None or end is None:
+        raise ValueError("History timestamps must be ISO dates with an explicit timezone.")
+    if args.offset and (not args.end or not args.snapshot):
+        raise ValueError("Continuing requires the previous page's --end and --snapshot (and --start for a custom range).")
+    result = history_page(Path.home(), start.astimezone(timezone.utc), end.astimezone(timezone.utc),
+                          args.offset, args.snapshot)
+    print(json.dumps(result, ensure_ascii=False))
+    return 0
 
 
 def git(path: Path, *args: str, timeout=25) -> str:
@@ -620,6 +744,8 @@ def run_collection(args, config, zone, day):
 
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "history":
+        return history_main(argv[1:])
     if argv and argv[0] == "--probe":
         day, zone, host = date.fromisoformat(argv[1]), ZoneInfo(argv[2]), argv[3]
         print(json.dumps(collect_host(day, zone, host), ensure_ascii=False))

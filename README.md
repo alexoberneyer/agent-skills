@@ -72,7 +72,7 @@ dependencies install on first run. No virtualenv to manage.
 
 | Command | What it does |
 | --- | --- |
-| `/context:keep` | Reviews the conversation and proposes what to keep: a memory entry, a repo context file, a skill, or nothing. Flags memories the conversation made stale. Writes only after you approve. |
+| `/context:keep [weekly]` | Reviews this conversation, or seven days of local Claude, Pi and OMP histories with `weekly`. Proposes durable context and stale-memory corrections. Writes only after approval. |
 | `/context:daily-report [date]` | Builds a private HTML account of the day's work across Git repositories and Claude, Pi, OMP, and Codex histories. Cited outcomes and explicit coverage gaps. |
 
 It also triggers on questions like "does any memory need to be updated?" or
@@ -86,6 +86,14 @@ shared or absent. `keep` checks scope, write permissions and destination
 visibility. Facts every agent needs go in explicitly shared memory or suitable
 repo context. Private facts stay in approved private storage, never a public
 checkout.
+
+Use `/context:keep weekly` in Claude, `/skill:keep weekly` in Pi or OMP, or
+`$keep weekly` in Codex. Bare `keep` remains conversation-only. Weekly mode
+requires Python 3.10+ and reuses the bundled `daily-report` history reader.
+It emits bounded text pages without Git, SSH or artifact writes. Prompt indexes
+and missing histories remain explicit gaps. Reviews still stop for approval.
+The `context` plugin includes both skills. Existing installation links need no
+change. Real histories and findings stay outside this public checkout.
 
 `daily-report` is self-contained. It bundles its collector and HTML template, with
 no global CLI or dotfiles dependency. Use `/context:daily-report yesterday` in

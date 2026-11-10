@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Personal Claude Code skills and commands.",
-    "version": "0.6.0"
+    "version": "0.6.1"
   },
   "plugins": [
     {
@@ -29,7 +29,7 @@
     {
       "name": "context",
       "description": "Carry useful context forward and build evidence-linked daily work reports from local repositories and agent histories.",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "author": {
         "name": "Alex Oberneyer"
       },
