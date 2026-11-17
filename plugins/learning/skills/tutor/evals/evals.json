@@ -1,0 +1,44 @@
+{
+  "skill_name": "tutor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Tutor me on conditional probability. I know percentages but keep mixing up P(A|B) and P(B|A). Use a small concrete problem and stop after three questions. Start the session now.",
+      "expected_output": "One accessible, concrete diagnostic question, without its answer, a course map or a configuration interview.",
+      "assertions": [
+        "Asks exactly one concrete question and ends the response at that question.",
+        "Does not reveal the answer or append a hint after the question.",
+        "Does not start a course map, numerical level assessment or mastery percentage."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Explain why a positive defect detector with 99% sensitivity need not mean a 99% chance that the part is defective. I only want a direct explanation, not a quiz.",
+      "expected_output": "A direct explanation distinguishing sensitivity from the probability of a defect given a positive result. No tutoring intake or test question.",
+      "assertions": [
+        "Answers directly without asking a question or starting a tutoring session.",
+        "Explains that prevalence and the false-positive rate also affect the probability of a defect given a positive result."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Continue a tutoring conversation. The exercise was: 10,000 parts, 1% defective, a detector with 99% sensitivity and a 5% false-positive rate. What fraction of positive results are truly defective? The learner has guessed 99% twice. Their latest message is: 'I'm stuck. Just tell me the answer and explain it. Don't give me another question yet.' Produce only the next tutor response.",
+      "expected_output": "A concise worked explanation: 100 defective parts yield 99 true positives; 9,900 good parts yield 495 false positives; 99 / 594 = 1/6, about 16.7%. No immediate re-test or claim of independent mastery.",
+      "assertions": [
+        "Gives the correct calculation, approximately 16.7%, using true and false positives.",
+        "Respects the explanation override without asking another question or demanding another attempt.",
+        "Does not credit the explained solution as the learner's unaided understanding."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Continue a tutoring conversation about conditional probability. So far the learner correctly distinguished P(positive|defect) from P(defect|positive) without hints, then needed a worked example for a numerical calculation. There has been no novel transfer problem or later retrieval attempt. Their latest message is: 'Stop tutoring now and save state as text only. Do not write files, schedule anything or ask another question.' Produce only the next tutor response.",
+      "expected_output": "A compact checkpoint and resumable text state. Records the specific unaided distinction and supported calculation, leaves transfer and durable understanding unassessed, and ends without another question. No file write or reminder action.",
+      "assertions": [
+        "Stops without a new question and emits resumable state as text, not a claimed file write or reminder.",
+        "Distinguishes the observed unaided answer from the calculation that required support.",
+        "Leaves novel transfer and durable understanding unassessed and does not invent history, mastery scores or exact earlier question wording."
+      ]
+    }
+  ]
+}

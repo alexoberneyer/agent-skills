@@ -23,7 +23,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `daily-report`, `video`, `article`, `voice-memos`, `demo-gif`, `plain-deck`, `build-learning-artifact`, `review-learning-artifact`, `analyze-music-taste` and `recommend-music-events`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `daily-report`, `video`, `article`, `voice-memos`, `demo-gif`, `plain-deck`, `build-learning-artifact`, `review-learning-artifact`, `tutor`, `analyze-music-taste` and `recommend-music-events`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -200,10 +200,12 @@ In Codex run `$analyze-music-taste` and `$recommend-music-events`; in Pi or OMP 
 | --- | --- |
 | `/learning:build-learning-artifact` | Builds a scientifically grounded, self-contained HTML lesson with a prediction, experiment, explanation and transfer exercises. |
 | `/learning:review-learning-artifact` | Reviews the science, mathematical model, learning experience, accessibility and offline behavior. |
+| `/learning:tutor` | Runs opt-in tutoring with one question at a time, adaptive hints, recall and transfer checks. Reuses the destination's learning evidence log when asked. |
 
-In Codex, use `$build-learning-artifact` or `$review-learning-artifact` after
-running the existing installer. Each folder uses standard `SKILL.md` frontmatter;
-Codex supports the installer's symlinked folders in `~/.agents/skills`.
+In Codex, use `$build-learning-artifact`, `$review-learning-artifact` or `$tutor`;
+in pi and omp, use `/skill:tutor` for tutoring. Run the existing installer first.
+Each folder uses standard `SKILL.md` frontmatter. Codex supports the installer's
+symlinked folders in `~/.agents/skills`.
 See the [official skill documentation](https://learn.chatgpt.com/docs/build-skills).
 
 These skills are generic. Learner profiles, curricula, artifacts and progress
@@ -215,6 +217,14 @@ does not authorize publishing it.
 **Setup.** No skill-specific runtime dependency. Use the host's browser and
 calculation tools to verify the generated artifact. Review reports distinguish
 completed checks from unavailable checks and learner mastery from build status.
+
+Try `/learning:tutor Tutor me on conditional probability. Stop after three
+questions.` Tutoring defaults to one bounded concept, not a full course. Ask for
+`hint`, `just tell me`, `show progress`, `stop` or `save state` at any time.
+It uses observed recognition, explanation and transfer evidence, not mastery
+percentages. Saved state is text unless you request a private file write. Chat
+answers and material read into context go to the host's model provider; the tutor
+is not offline like the HTML lessons. It creates no reminders or tracking service.
 
 ## Local development
 
@@ -233,6 +243,10 @@ Run the tests with `python3 -m unittest discover tests`.
 [Agentic Engineering Patterns](https://simonwillison.net/guides/agentic-engineering-patterns/prompts/#proofreader)
 guide. His six checks are the core of it. The numbered report format, the rewrite
 rules, and the build-breaking check are additions.
+
+`tutor` adapts Jane Street's [socratic-tutor](https://github.com/janestreet/agent_skills/blob/7c6715c29548a3b39d4a9545c698ee4fd17a7213/socratic-tutor/SKILL.md).
+Its [upstream MIT notice](plugins/learning/skills/tutor/LICENSE.upstream) is bundled
+with the skill.
 
 ## Layout
 

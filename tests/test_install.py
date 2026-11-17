@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import os
 import shutil
 import subprocess
@@ -8,6 +9,35 @@ import unittest
 INSTALLER = Path(__file__).resolve().parents[1] / 'install.sh'
 
 class InstallTest(unittest.TestCase):
+    def test_tutor_installs_with_license_and_matching_plugin_metadata(self):
+        source = INSTALLER.parent / 'plugins/learning'
+        marketplace = json.loads((INSTALLER.parent / '.claude-plugin/marketplace.json').read_text())
+        entry = next(plugin for plugin in marketplace['plugins'] if plugin['name'] == 'learning')
+        metadata = json.loads((source / '.claude-plugin/plugin.json').read_text())
+        self.assertEqual(entry['version'], metadata['version'])
+        self.assertEqual(entry['description'], metadata['description'])
+        self.assertFalse((source / 'commands/tutor.md').exists())
+        with tempfile.TemporaryDirectory(prefix='tutor install ') as d:
+            root = Path(d) / 'public checkout'
+            root.mkdir()
+            shutil.copy2(INSTALLER, root / 'install.sh')
+            shutil.copytree(source, root / 'plugins/learning')
+            home = Path(d) / 'home'
+            for _ in range(2):
+                result = subprocess.run(['bash', str(root / 'install.sh')],
+                                        env={**os.environ, 'HOME': str(home)}, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+            installed = home / '.agents/skills/tutor'
+            self.assertEqual(installed.resolve(), (root / 'plugins/learning/skills/tutor').resolve())
+            instructions = (installed / 'SKILL.md').read_text()
+            self.assertTrue(instructions.startswith('---\nname: tutor\n'))
+            for invocation in ('/learning:tutor', '/skill:tutor', '$tutor'):
+                self.assertIn(invocation, instructions)
+            self.assertIn('Copyright (c) 2026 Jane Street Group, LLC',
+                          (installed / 'LICENSE.upstream').read_text())
+            self.assertFalse((home / '.claude/commands/tutor.md').exists())
+            self.assertFalse((home / '.local/bin/tutor').exists())
+
     def test_daily_report_installs_as_one_self_contained_skill(self):
         with tempfile.TemporaryDirectory(prefix='daily report install ') as d:
             root = Path(d) / 'public checkout'

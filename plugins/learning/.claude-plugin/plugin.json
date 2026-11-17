@@ -1,5 +1,5 @@
 {
   "name": "learning",
-  "version": "0.1.0",
-  "description": "Build and review scientifically grounded, interactive HTML learning artifacts."
+  "version": "0.2.0",
+  "description": "Build and review interactive HTML learning artifacts, and tutor through opt-in recall and transfer practice."
 }
