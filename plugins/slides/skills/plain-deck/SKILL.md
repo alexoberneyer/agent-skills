@@ -14,9 +14,9 @@ description: >
 # Plain deck
 
 A slide deck as one HTML file: 16:9 slides that scale to any screen, arrow keys
-or click to advance, one slide per landscape page on print. One type family
-(Inter) from Google Fonts, a quiet palette, no logo. Nothing is embedded, so the
-file stays small and shareable.
+or click to advance, one slide per landscape page on print. Jost headings and
+DM Sans body text from Google Fonts, a quiet palette, no logo. Nothing is
+embedded, so the file stays small and shareable.
 
 Two stops. **Never build before the outline is agreed.** A model-written deck
 fails on language long before it fails on layout.
@@ -83,7 +83,25 @@ shell's CSS:
 | `--flag` | one thing only, kept under about 5% of the surface |
 | `--warm`, `--warm-soft` | the proposal badge and highlighted table rows |
 | `--ink`, `--muted`, `--line`, `--paper`, `--surface` | text and structure |
-| `--display`, `--body`, `--mono` | type; set `--display` to a second face if the deck wants one |
+| `--display`, `--body`, `--mono` | type: Jost, DM Sans and JetBrains Mono respectively |
+
+## Typography
+
+Use the default pairing consistently:
+
+| Role | Family | Weight |
+| --- | --- | --- |
+| Slide titles, headings and big numbers | Jost | 800 |
+| Secondary display text in visuals | Jost | 600 or 700 |
+| Body text, lists and descriptions | DM Sans | 400 |
+| Captions and labels | DM Sans | 500 to 700 |
+| Body emphasis | DM Sans | 700 |
+| Code and monospaced data | JetBrains Mono | 400 or 600 |
+
+Keep the shell's responsive `cqw` sizes and tight heading tracking. Load every
+used weight in the Google Fonts stylesheet, including DM Sans 600 for SVG
+labels. Keep the system fallbacks; the Google Fonts faces need a connection
+on first load and are not embedded in the HTML.
 
 A different typeface also needs its Google Fonts link swapped in
 `assets/deck-shell.html`, or added in the body's `<style>` block with `@import`.
@@ -111,9 +129,9 @@ From feedback on a model-written deck an audience found hard to follow:
   `--flag` marks one thing only.
 - Reuse one visual to tell a story: an empty grid early, the same grid filled
   at the end.
-- SVG: an explicit fill on every shape. Text inherits the body face. Add
-  `class="display"` for the display face. Inter bold runs about 0.58 × font size
-  per character, so check each label against its neighbours before building.
+- SVG: an explicit fill on every shape. Text inherits DM Sans. Add
+  `class="display"` for Jost. Check label widths and neighbours with the actual
+  font and weight loaded; do not reuse measurements from another typeface.
   Label collisions are the most common defect the one look finds.
 - Leave room in the `viewBox` for the outermost labels.
 

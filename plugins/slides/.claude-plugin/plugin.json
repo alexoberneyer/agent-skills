@@ -1,6 +1,6 @@
 {
   "name": "slides",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Build a plain HTML slide deck: agree an outline first, then 16:9 slides that scale to any screen, carry one visual each and print one per page.",
   "author": {
     "name": "Alex Oberneyer"

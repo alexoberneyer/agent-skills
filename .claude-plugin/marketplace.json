@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Personal Claude Code skills and commands.",
-    "version": "0.6.2"
+    "version": "0.6.3"
   },
   "plugins": [
     {
@@ -47,7 +47,7 @@
     {
       "name": "slides",
       "description": "Build a plain HTML slide deck: agree an outline first, then 16:9 slides that scale to any screen, carry one visual each and print one per page.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Alex Oberneyer"
       },
