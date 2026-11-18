@@ -1,33 +1,39 @@
 <title>{{TITLE}}</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Jost:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..500;1,6..72,300..500&display=swap">
 <style>
+/* Look inspired by the KyberCore Solutions site (kybercore.ai): dark ground,
+   light serif display, mono labels, hairlines. Hue, type and motifs are our own. */
 :root{
-  --accent:#2e5e8c; --accent-60:#254c72; --accent-70:#1b3a58; --accent-80:#0f2438;
-  --accent-10:#d5dee6; --accent-soft:#eef3f7;
-  --alt:#4f9a8a; --alt-70:#3a7367; --alt-soft:#e6efec;
-  --alt-20:#bfdcd5; --alt-05:#f2f8f6;
-  --flag:#c8372d; --warm:#e08a5f; --warm-soft:#f8e8df;
-  --ink:#16191d; --muted:#5f6b76; --line:#e3e8ec;
-  --paper:#ffffff; --surface:#f7f9fa;
-  --display:'Jost',system-ui,sans-serif;
+  /* ground and text: one tinted near-black, one warm off-white */
+  --paper:#0b0c0f; --surface:#14161b;
+  --ink:#ede9e0; --muted:#a3a097; --faint:#6f6d68;
+  --line:#25272c; --line-strong:#3b3d43;
+  /* the accent family: headlines in italic, numbers, the one thing that glows */
+  --accent:#e9a25f; --accent-hi:#f6c995; --accent-lo:#8a6038; --accent-soft:#251d15;
+  /* the second family: a cool counterweight for a second dimension */
+  --alt:#86aecf; --alt-hi:#bcd4e8; --alt-lo:#3e5870; --alt-soft:#151c24;
+  --flag:#ff5b45;
+  --glow:rgba(233,162,95,.14); --glow-alt:rgba(134,174,207,.07);
+  --display:'Newsreader',Georgia,'Times New Roman',serif;
   --body:'DM Sans',system-ui,sans-serif;
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
 }
 
-/* Deliberately single-world: this deck is projected and printed, so it commits
-   to one light palette rather than following the viewer's theme. */
+/* Deliberately single-world: one dark palette for screen, projector and PDF,
+   rather than following the viewer's theme. */
 
 *{box-sizing:border-box}
 body{
-  margin:0; background:var(--accent-80); color:var(--ink);
+  margin:0; background:#000; color:var(--ink);
   font-family:var(--body); font-weight:400;
   display:flex; align-items:center; justify-content:center;
   min-height:100vh; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 
 /* ---------- progress ---------- */
 #progress{
-  position:fixed; top:0; left:0; height:4px; background:var(--flag);
+  position:fixed; top:0; left:0; height:2px; background:var(--accent);
   width:0; z-index:50; transition:width .25s ease;
 }
 
@@ -35,152 +41,177 @@ body{
 #deck{width:min(100vw,177.7778vh); aspect-ratio:16/9; position:relative}
 .slide{
   position:absolute; inset:0; container-type:size;
-  background:var(--paper); overflow:hidden;
+  background:
+    radial-gradient(55% 60% at 0% 0%,var(--glow-alt),transparent 70%),
+    radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.35)),
+    var(--paper);
+  color:var(--ink); overflow:hidden;
   padding:5.2cqw 5.6cqw 4.4cqw;
   display:none; flex-direction:column;
 }
 .slide.on{display:flex}
 
-/* dark variant */
+/* stage variant: title and closing slides get the warm glow and corner marks */
 .slide.dark{
-  background:linear-gradient(135deg,var(--accent-70) 0%,var(--accent) 62%,var(--alt-70) 100%);
-  color:#fff;
+  background:
+    radial-gradient(60% 75% at 92% 105%,var(--glow),transparent 70%),
+    radial-gradient(45% 55% at 8% -5%,var(--glow-alt),transparent 70%),
+    radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.5)),
+    var(--paper);
 }
-.slide.dark .eyebrow{color:var(--alt-20)}
-.slide.dark .lede{color:rgba(255,255,255,.86)}
-.slide.dark .rule{background:var(--alt-20)}
+.slide.dark::after{
+  content:""; position:absolute; inset:2.2cqw; pointer-events:none;
+  --m:var(--line-strong); --l:1.4cqw;
+  background:
+    linear-gradient(var(--m),var(--m)) top left/var(--l) 1px no-repeat,
+    linear-gradient(var(--m),var(--m)) top left/1px var(--l) no-repeat,
+    linear-gradient(var(--m),var(--m)) top right/var(--l) 1px no-repeat,
+    linear-gradient(var(--m),var(--m)) top right/1px var(--l) no-repeat,
+    linear-gradient(var(--m),var(--m)) bottom left/var(--l) 1px no-repeat,
+    linear-gradient(var(--m),var(--m)) bottom left/1px var(--l) no-repeat,
+    linear-gradient(var(--m),var(--m)) bottom right/var(--l) 1px no-repeat,
+    linear-gradient(var(--m),var(--m)) bottom right/1px var(--l) no-repeat;
+}
 
 /* ---------- type ---------- */
 .eyebrow{
-  font-family:var(--body); font-size:1.05cqw; font-weight:700;
-  letter-spacing:.2em; text-transform:uppercase; color:var(--alt-70);
-  margin:0 0 1.6cqw;
+  font-family:var(--mono); font-size:.95cqw; font-weight:500;
+  letter-spacing:.24em; text-transform:uppercase; color:var(--muted);
+  margin:0 0 1.8cqw;
+}
+.eyebrow b{font-weight:500; color:var(--accent); margin-right:1.4em}
+.meta{
+  position:absolute; top:5.2cqw; right:5.6cqw; margin:0;
+  font-family:var(--mono); font-size:.95cqw; font-weight:400;
+  letter-spacing:.24em; text-transform:uppercase; color:var(--faint);
 }
 h1{
-  font-family:var(--display); font-weight:800; font-size:8.4cqw;
-  line-height:1.02; letter-spacing:-.025em; margin:0; text-wrap:balance;
+  font-family:var(--display); font-weight:300; font-size:8.8cqw;
+  line-height:.94; letter-spacing:-.035em; margin:0; text-wrap:balance;
 }
 h2{
-  font-family:var(--display); font-weight:800; font-size:5cqw;
-  line-height:1.06; letter-spacing:-.022em; margin:0; text-wrap:balance;
+  font-family:var(--display); font-weight:400; font-size:4.8cqw;
+  line-height:1.02; letter-spacing:-.025em; margin:0; text-wrap:balance;
 }
-.rule{width:5.6cqw; height:.38cqw; background:var(--flag); margin:1.5cqw 0 2.4cqw; border:0}
-.lede{font-size:1.95cqw; line-height:1.5; color:var(--muted); max-width:52ch; margin:0}
+h1 em,h2 em{font-style:italic; font-weight:inherit; color:var(--accent)}
+.rule{width:5.6cqw; height:1px; background:var(--accent); margin:1.8cqw 0 2.2cqw; border:0}
+.lede{font-size:1.85cqw; line-height:1.5; font-weight:300; color:var(--muted); max-width:52ch; margin:0}
 .slide-body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center}
 .kicker{
-  margin-top:auto; padding-top:2cqw; font-size:1.55cqw; line-height:1.45;
+  margin-top:auto; padding-top:1.8cqw; font-size:1.45cqw; line-height:1.45; color:var(--muted);
   border-top:1px solid var(--line);
 }
-.slide.dark .kicker{border-top-color:rgba(255,255,255,.22)}
-.kicker strong{font-weight:700}
-code,.mono{font-family:var(--mono); font-size:.92em; font-weight:400}
+.kicker strong{font-weight:500; color:var(--ink)}
+code,.mono{font-family:var(--mono); font-size:.9em; font-weight:400}
 
 /* ---------- title slide ---------- */
 .title-slide{justify-content:center; padding-bottom:6.5cqw}
+.title-slide > .eyebrow{position:absolute; top:5.2cqw; left:5.6cqw; margin:0}
+.title-slide .lede{margin-top:2.6cqw}
 .hero-facts{
-  display:flex; gap:3cqw; margin-top:4cqw; padding-top:2.2cqw;
-  border-top:1px solid rgba(255,255,255,.24);
+  display:flex; gap:4cqw; margin:4cqw 0 0; padding-top:1.8cqw;
+  border-top:1px solid var(--line);
 }
-.fact{display:flex; flex-direction:column; gap:.5cqw}
-.fact dt{font-size:.95cqw; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--alt-20)}
-.fact dd{margin:0; font-size:1.5cqw; font-weight:500; color:#fff}
-.accent-bar{
-  position:absolute; left:0; right:0; bottom:0; height:.85cqw;
-  background:linear-gradient(90deg,var(--accent) 0 60%,var(--alt) 60% 82%,var(--alt-20) 82% 95%,var(--flag) 95% 100%);
-}
-/* the accent family is the dark slide's own ground, so lift the bar off it */
-.slide.dark .accent-bar{
-  background:linear-gradient(90deg,var(--accent-10) 0 60%,var(--alt-20) 60% 82%,var(--alt) 82% 95%,var(--flag) 95% 100%);
-}
+.fact{display:flex; flex-direction:column; gap:.6cqw}
+.fact dt{font-family:var(--mono); font-size:.85cqw; font-weight:500; letter-spacing:.22em; text-transform:uppercase; color:var(--faint)}
+.fact dd{margin:0; font-size:1.45cqw; font-weight:400; color:var(--ink)}
 
 /* ---------- generic lists ---------- */
 .stack{display:flex; flex-direction:column; gap:1.5cqw; margin:0; padding:0; list-style:none}
-.stack li{font-size:2.1cqw; line-height:1.4; font-weight:400}
-.stack li strong{font-weight:700}
-.stack.tight li{font-size:1.75cqw}
+.stack li{font-size:2cqw; line-height:1.4; font-weight:300}
+.stack li strong{font-weight:500}
+.stack.tight li{font-size:1.7cqw}
 
 /* item rows: name + gloss */
-.rows{display:flex; flex-direction:column; gap:1.15cqw; margin:0; padding:0; list-style:none}
-.rows li{display:grid; grid-template-columns:15.5cqw minmax(0,1fr); gap:1.6cqw; align-items:baseline}
-.rows .nm{font-family:var(--mono); font-weight:600; font-size:1.42cqw; color:var(--accent); word-break:break-word}
-.slide.dark .rows .nm{color:var(--alt-20)}
-.rows .gl{font-size:1.5cqw; line-height:1.42; color:var(--ink)}
-.slide.dark .rows .gl{color:rgba(255,255,255,.9)}
+.rows{display:flex; flex-direction:column; gap:0; margin:0; padding:0; list-style:none; border-top:1px solid var(--line)}
+.rows li{display:grid; grid-template-columns:15.5cqw minmax(0,1fr); gap:1.6cqw; align-items:baseline; padding:1.05cqw 0; border-bottom:1px solid var(--line)}
+.rows .nm{font-family:var(--mono); font-weight:500; font-size:1.3cqw; color:var(--accent); word-break:break-word}
+.rows .gl{font-size:1.5cqw; line-height:1.42; font-weight:300; color:var(--ink)}
 
 /* ---------- columns ---------- */
-.cols{display:grid; gap:2cqw}
+.cols{display:grid; gap:2.4cqw}
 .c4{grid-template-columns:repeat(4,1fr)}
 .c2{grid-template-columns:1fr 1fr; gap:3.2cqw}
 .col-h{
-  font-family:var(--body); font-weight:700; font-size:1.6cqw; margin:0 0 .8cqw;
-  padding-bottom:.7cqw; border-bottom:.22cqw solid var(--alt);
+  font-family:var(--display); font-weight:400; font-size:2.2cqw; letter-spacing:-.01em; margin:0 0 1cqw;
+  padding-bottom:1cqw; border-bottom:1px solid var(--line-strong);
 }
-.col-p{margin:0; font-size:1.35cqw; line-height:1.45; color:var(--muted)}
-.col--accent .col-h{border-bottom-color:var(--flag)}
+.col-p{margin:0; font-size:1.35cqw; line-height:1.5; font-weight:300; color:var(--muted)}
+.col--accent .col-h{border-bottom-color:var(--accent)}
+
+/* ---------- big numbers ---------- */
+.stat b{
+  display:block; font-family:var(--display); font-weight:300; font-size:6.4cqw;
+  line-height:1; letter-spacing:-.04em; color:var(--ink); font-variant-numeric:lining-nums;
+}
+.stat b i{font-style:italic; color:var(--accent)}
+.stat span{
+  display:block; margin-top:1.2cqw; padding-top:1cqw; border-top:1px solid var(--line);
+  font-family:var(--mono); font-size:.9cqw; letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
+}
 
 /* ---------- group cards ---------- */
 .groups{display:grid; grid-template-columns:repeat(4,1fr); gap:1.6cqw}
-.group{background:var(--surface); border:1px solid var(--line); border-radius:.8cqw; padding:1.5cqw 1.4cqw}
+.group{background:rgba(255,255,255,.015); border:1px solid var(--line); padding:1.5cqw 1.4cqw}
 .group h3{
-  font-family:var(--body); font-size:1.02cqw; font-weight:700; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--alt-70); margin:0 0 1cqw;
+  font-family:var(--mono); font-size:.9cqw; font-weight:500; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 1.2cqw;
 }
-.group ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:.85cqw}
-.group li{font-family:var(--mono); font-weight:600; font-size:1.16cqw; line-height:1.3; color:var(--accent)}
-.group li span{display:block; font-family:var(--body); font-weight:400; font-size:1.02cqw; color:var(--muted); margin-top:.25cqw}
+.group ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:.9cqw}
+.group li{font-weight:500; font-size:1.25cqw; line-height:1.3; color:var(--ink)}
+.group li span{display:block; font-weight:300; font-size:1.05cqw; color:var(--muted); margin-top:.25cqw}
 
 /* ---------- tables ---------- */
-table{width:100%; border-collapse:collapse; font-size:1.5cqw}
+table{width:100%; border-collapse:collapse; font-size:1.45cqw}
 th{
-  background:var(--accent-70); color:#fff; font-size:.95cqw; font-weight:700;
-  letter-spacing:.1em; text-transform:uppercase; text-align:left;
-  padding:.9cqw 1.2cqw;
+  font-family:var(--mono); color:var(--muted); font-size:.85cqw; font-weight:500;
+  letter-spacing:.2em; text-transform:uppercase; text-align:left;
+  padding:.9cqw 1.2cqw; border-bottom:1px solid var(--accent);
 }
-td{padding:1cqw 1.2cqw; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.35}
+td{padding:1cqw 1.2cqw; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.35; font-weight:300}
 tr:last-child td{border-bottom:0}
-.slide.dark td{border-bottom-color:rgba(255,255,255,.18); color:#fff}
-td .mono{color:var(--accent); font-weight:600}
-.slide.dark td .mono{color:var(--alt-20)}
-tr.hi td{background:var(--warm-soft)}
-tr.hi td .mono{color:var(--accent-70)}
+td .mono{color:var(--accent); font-weight:500}
+tr.hi td{background:var(--accent-soft)}
 
 /* ---------- chart ---------- */
-.chart{display:flex; flex-direction:column; gap:.95cqw}
-.bar-row{display:grid; grid-template-columns:13cqw minmax(0,1fr) 4cqw; gap:1.2cqw; align-items:center}
-.bar-lab{font-family:var(--mono); font-size:1.2cqw; font-weight:600; color:var(--accent); text-align:right}
-.bar-track{height:1.9cqw; background:var(--accent-soft); border-radius:.2cqw; overflow:hidden}
-.bar-fill{height:100%; background:var(--alt); border-radius:.2cqw}
+.chart{display:flex; flex-direction:column; gap:1cqw}
+.bar-row{display:grid; grid-template-columns:13cqw minmax(0,1fr) 5cqw; gap:1.2cqw; align-items:center}
+.bar-lab{font-family:var(--mono); font-size:1.05cqw; font-weight:500; letter-spacing:.06em; color:var(--muted); text-align:right}
+.bar-track{height:1.5cqw; background:var(--surface); border-left:1px solid var(--line-strong)}
+.bar-fill{height:100%; background:var(--alt-lo)}
 .bar-row.lead .bar-fill{background:var(--accent)}
+.bar-row.lead .bar-lab{color:var(--ink)}
 .bar-val{
-  font-family:var(--mono); font-size:1.25cqw; font-weight:600; color:var(--ink);
+  font-family:var(--mono); font-size:1.2cqw; font-weight:500; color:var(--muted);
   font-variant-numeric:tabular-nums;
 }
-.bar-row.lead .bar-val{color:var(--flag)}
+.bar-row.lead .bar-val{color:var(--accent)}
 
 /* ---------- chrome ---------- */
 #chrome{
   position:fixed; right:2.2vh; bottom:1.8vh; z-index:40;
   display:flex; align-items:center; gap:1.4vh;
-  font-family:var(--body); font-size:1.65vh; color:rgba(255,255,255,.88);
-  /* its own ground: white-on-white otherwise once a light slide fills an exact 16:9 viewport */
-  background:rgba(15,36,56,.78); padding:.7vh 1.1vh; border-radius:.7vh;
+  font-family:var(--mono); font-size:1.4vh; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--muted); background:rgba(11,12,15,.82); padding:.7vh 1.1vh;
+  border:1px solid var(--line);
 }
-#counter{font-variant-numeric:tabular-nums; letter-spacing:.06em}
+#counter{font-variant-numeric:tabular-nums}
 #chrome button{
-  font:inherit; color:inherit; background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.22); border-radius:.5vh;
+  font:inherit; color:inherit; background:none;
+  border:1px solid var(--line-strong);
   width:3.4vh; height:3.4vh; cursor:pointer; line-height:1;
 }
-#chrome button:hover{background:rgba(255,255,255,.24)}
-#chrome button:focus-visible,#printbtn:focus-visible{outline:2px solid var(--alt-20); outline-offset:2px}
-#printbtn{
-  font:inherit; color:inherit; background:none; border:0; cursor:pointer;
-  text-decoration:underline; text-underline-offset:.35vh; padding:0;
+#chrome button:hover{color:var(--ink); border-color:var(--accent)}
+#chrome button:focus-visible,#printbtn:focus-visible{outline:1px solid var(--accent); outline-offset:2px}
+#chrome #printbtn{
+  width:auto; height:auto; font:inherit; color:inherit; background:none; border:0; cursor:pointer; padding:0;
+  text-decoration:underline; text-underline-offset:.35vh; text-decoration-color:var(--line-strong);
 }
 #hint{
   position:fixed; left:2.2vh; bottom:1.8vh; z-index:40;
-  font-family:var(--body); font-size:1.5vh; color:rgba(255,255,255,.8);
-  background:rgba(15,36,56,.62); padding:.5vh 1vh; border-radius:.6vh;
+  font-family:var(--mono); font-size:1.3vh; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--faint); background:rgba(11,12,15,.7); padding:.6vh 1vh;
+  border:1px solid var(--line);
 }
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -188,7 +219,7 @@ tr.hi td .mono{color:var(--accent-70)}
 /* ---------- print: one slide per landscape page ---------- */
 @media print{
   @page{size:landscape; margin:0}
-  body{display:block; background:#fff; overflow:visible}
+  body{display:block; background:var(--paper); overflow:visible}
   #progress,#chrome,#hint{display:none!important}
   #deck{width:100%; aspect-ratio:auto}
   .slide{
@@ -202,40 +233,39 @@ tr.hi td .mono{color:var(--accent-70)}
 /* ---------- split layout: text left, one visual right ---------- */
 .split{flex:1; min-height:0; display:grid; grid-template-columns:minmax(0,40fr) minmax(0,60fr); gap:4.5cqw}
 .copy{display:flex; flex-direction:column; justify-content:center; min-width:0}
-.copy h2{font-size:4.3cqw}
-.copy .rule{margin:1.3cqw 0 1.8cqw}
-.copy .lede{font-size:1.7cqw; line-height:1.45; max-width:none}
+.copy h2{font-size:4.2cqw}
+.copy .rule{margin:1.5cqw 0 1.8cqw}
+.copy .lede{font-size:1.65cqw; line-height:1.5; max-width:none}
 .viz{display:flex; align-items:center; justify-content:center; min-width:0; min-height:0}
 .viz svg{display:block; width:100%; height:auto; max-height:45cqw}
 .viz svg text{font-family:var(--body)}
 .viz svg text.display{font-family:var(--display)}
+.viz svg text.mono{font-family:var(--mono); letter-spacing:.16em; text-transform:uppercase}
 
-/* ---------- labelled rows: swatch, flagged number or big numeral, then label and gloss ---------- */
-.items{list-style:none; margin:2cqw 0 0; padding:0; display:flex; flex-direction:column; gap:1.6cqw}
-.items li{display:grid; grid-template-columns:2.2cqw minmax(0,1fr); gap:1.2cqw; align-items:start}
-.items .sw{width:2.2cqw; height:2.2cqw; border-radius:.5cqw; margin-top:.1cqw}
+/* ---------- labelled rows: swatch, number or big numeral, then label and gloss ---------- */
+.items{list-style:none; margin:2cqw 0 0; padding:0; display:flex; flex-direction:column; gap:1.5cqw}
+.items li{display:grid; grid-template-columns:2.6cqw minmax(0,1fr); gap:1.2cqw; align-items:start}
+.items .sw{width:1.1cqw; height:1.1cqw; margin-top:.45cqw}
 .items .num{
-  width:2.2cqw; height:2.2cqw; border-radius:50%; background:var(--flag); color:#fff;
-  font-weight:700; font-size:1.2cqw; display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-weight:500; font-size:1.05cqw; letter-spacing:.08em;
+  color:var(--accent); padding-top:.45cqw;
 }
-.items .big{font-family:var(--display); font-weight:800; font-size:2.6cqw; line-height:1; color:var(--alt-70)}
-.items .t b{display:block; font-weight:700; font-size:1.6cqw; line-height:1.3; color:var(--ink)}
-.items .t span{display:block; font-size:1.42cqw; line-height:1.45; color:var(--muted); margin-top:.2cqw}
-.items.qs .t b{font-size:2.2cqw; line-height:1.25}
-.note{margin:2.4cqw 0 0; padding-top:1.5cqw; border-top:1px solid var(--line); font-size:1.55cqw; line-height:1.45}
-.note strong{font-weight:700}
+.items .big{font-family:var(--display); font-weight:300; font-size:2.8cqw; line-height:1; color:var(--accent)}
+.items .t b{display:block; font-weight:500; font-size:1.55cqw; line-height:1.3; color:var(--ink)}
+.items .t span{display:block; font-size:1.38cqw; line-height:1.45; font-weight:300; color:var(--muted); margin-top:.2cqw}
+.items.qs .t b{font-family:var(--display); font-weight:400; font-size:2.2cqw; line-height:1.2}
+.note{margin:2.4cqw 0 0; padding-top:1.5cqw; border-top:1px solid var(--line); font-size:1.45cqw; line-height:1.45; font-weight:300; color:var(--muted)}
+.note strong{font-weight:500; color:var(--ink)}
 
 /* ---------- proposal marker: an invented number never reads as a finding ---------- */
 .badge{
-  display:inline-block; font-family:var(--body); font-size:.82cqw; font-weight:700;
-  letter-spacing:.14em; text-transform:uppercase; color:#fff; background:var(--warm);
-  border-radius:.3cqw; padding:.28cqw .7cqw; margin-left:.8cqw; vertical-align:.22cqw;
+  display:inline-block; font-family:var(--mono); font-size:.75cqw; font-weight:500;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--accent);
+  border:1px solid var(--accent-lo); padding:.25cqw .6cqw; margin-left:.8cqw; vertical-align:.25cqw;
 }
-.slide.dark .badge{background:var(--alt-20); color:var(--accent-80)}
 
 /* ---------- title slide with a quiet SVG motif behind the words ---------- */
 .title-motif{position:absolute; right:4cqw; top:50%; transform:translateY(-50%); width:40cqw; height:auto; pointer-events:none}
-.title-slide.with-motif > .eyebrow,
 .title-slide.with-motif > h1,
 .title-slide.with-motif > .lede,
 .title-slide.with-motif > .hero-facts{position:relative; max-width:54%}

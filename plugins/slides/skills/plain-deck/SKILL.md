@@ -14,9 +14,10 @@ description: >
 # Plain deck
 
 A slide deck as one HTML file: 16:9 slides that scale to any screen, arrow keys
-or click to advance, one slide per landscape page on print. Jost headings and
-DM Sans body text from Google Fonts, a quiet palette, no logo. Nothing is
-embedded, so the file stays small and shareable.
+or click to advance, one slide per landscape page on print. A dark, editorial
+look: light Newsreader headlines with one italic phrase in amber, DM Sans body
+text, JetBrains Mono labels, hairlines instead of boxes, no logo. Fonts come
+from Google Fonts. Nothing is embedded, so the file stays small and shareable.
 
 Two stops. **Never build before the outline is agreed.** A model-written deck
 fails on language long before it fails on layout.
@@ -59,12 +60,15 @@ nothing until the user answers. Record the answers in the outline.
 3. Look once:
    `python3 scripts/shot.py <deck>.html <scratch dir>`, then read every PNG.
    Fix what they show in one pass and rebuild. Do not loop.
-4. Publish with the Artifact tool if the session has one: an emoji favicon on
-   the first publish, and the artifact `url` on every republish. Say the link is
-   private until the user shares it. Commit the deck and the outline.
+4. Publish with the Artifact tool if the session has one: a one-word `icon`
+   such as `slides` on the first publish, and the artifact `url` on every
+   republish. Say the link is private until the user shares it. Commit the deck
+   and the outline.
 
 A deck built here keeps its body between `deck:body` markers. To pick up a
 later fix to the shell, rebuild it in place: `build.py <deck>.html <deck>.html`.
+Decks built before version 0.2 used a light look and tokens that no longer
+exist (`--accent-10`, `--warm` and others). Leave them as built.
 
 ## Palette
 
@@ -73,17 +77,21 @@ look, redefine the tokens in the body's `<style>` block, which lands after the
 shell's CSS:
 
 ```html
-<style>:root{ --accent:#3b3f6d; --accent-70:#272a4c; --alt:#7a9e7f; --flag:#b4462f; }</style>
+<style>:root{ --accent:#8fd1a8; --accent-hi:#c4ead2; --accent-lo:#3f6b51; --accent-soft:#16211b; --glow:rgba(143,209,168,.12); }</style>
 ```
 
 | Token | Carries |
 | --- | --- |
-| `--accent`, `--accent-60/70/80`, `--accent-10`, `--accent-soft` | the primary family: dark slides, table headers, names |
-| `--alt`, `--alt-70`, `--alt-20`, `--alt-05`, `--alt-soft` | the second family: eyebrows, bars, accents on dark |
+| `--paper`, `--surface` | the near-black ground, and a raised fill for SVG panels and bar tracks |
+| `--ink`, `--muted`, `--faint` | headline and body text, secondary text, quiet labels |
+| `--line`, `--line-strong` | hairlines: dividers, table rules, outlines |
+| `--accent`, `--accent-hi`, `--accent-lo`, `--accent-soft` | amber: the italic phrase, numbers, rules, the lead bar, highlighted rows |
+| `--alt`, `--alt-hi`, `--alt-lo`, `--alt-soft` | steel blue: a second dimension in charts and visuals |
 | `--flag` | one thing only, kept under about 5% of the surface |
-| `--warm`, `--warm-soft` | the proposal badge and highlighted table rows |
-| `--ink`, `--muted`, `--line`, `--paper`, `--surface` | text and structure |
-| `--display`, `--body`, `--mono` | type: Jost, DM Sans and JetBrains Mono respectively |
+| `--glow`, `--glow-alt` | the soft radial glows behind slides |
+| `--display`, `--body`, `--mono` | type: Newsreader, DM Sans and JetBrains Mono respectively |
+
+Amber is scarce on purpose. If everything glows, nothing does.
 
 ## Typography
 
@@ -91,17 +99,17 @@ Use the default pairing consistently:
 
 | Role | Family | Weight |
 | --- | --- | --- |
-| Slide titles, headings and big numbers | Jost | 800 |
-| Secondary display text in visuals | Jost | 600 or 700 |
-| Body text, lists and descriptions | DM Sans | 400 |
-| Captions and labels | DM Sans | 500 to 700 |
-| Body emphasis | DM Sans | 700 |
-| Code and monospaced data | JetBrains Mono | 400 or 600 |
+| Title slide headline | Newsreader | 300 |
+| Slide titles, column heads, big numbers | Newsreader | 300 or 400 |
+| The emphasised phrase in a title | Newsreader italic, in `<em>` | inherits |
+| Body text, lists and descriptions | DM Sans | 300 or 400 |
+| Body emphasis and item labels | DM Sans | 500 |
+| Eyebrows, labels, table heads, code | JetBrains Mono | 400 or 500, uppercase and tracked for labels |
 
-Keep the shell's responsive `cqw` sizes and tight heading tracking. Load every
-used weight in the Google Fonts stylesheet, including DM Sans 600 for SVG
-labels. Keep the system fallbacks; the Google Fonts faces need a connection
-on first load and are not embedded in the HTML.
+At most one `<em>` per slide title, on the words that carry the point. Keep the
+shell's responsive `cqw` sizes and tight heading tracking. Load every used
+weight in the Google Fonts stylesheet. Keep the system fallbacks; the Google
+Fonts faces need a connection on first load and are not embedded in the HTML.
 
 A different typeface also needs its Google Fonts link swapped in
 `assets/deck-shell.html`, or added in the body's `<style>` block with `@import`.
@@ -123,29 +131,33 @@ From feedback on a model-written deck an audience found hard to follow:
 ## Visuals
 
 - Default layout: `.split`, text in `.copy` (40%), one inline SVG in `.viz`
-  (60%). Title and closing slides can go dark.
+  (60%). Title and closing slides take `.dark`, the stage variant.
 - Colour carries meaning and keeps it across slides. One family per dimension,
   for example the accent family for audience and the alt family for level.
   `--flag` marks one thing only.
 - Reuse one visual to tell a story: an empty grid early, the same grid filled
   at the end.
-- SVG: an explicit fill on every shape. Text inherits DM Sans. Add
-  `class="display"` for Jost. Check label widths and neighbours with the actual
-  font and weight loaded; do not reuse measurements from another typeface.
-  Label collisions are the most common defect the one look finds.
+- SVG on the dark ground: structure in `var(--line)` and `var(--surface)`, the
+  point in `var(--accent)`, square corners, 1px strokes. An explicit fill on
+  every shape. Text inherits DM Sans. Add `class="display"` for Newsreader and
+  `class="mono"` for uppercase mono labels. Check label widths and neighbours
+  with the actual font and weight loaded; do not reuse measurements from
+  another typeface. Label collisions are the most common defect the one look
+  finds.
 - Leave room in the `viewBox` for the outermost labels.
 
 ## Components in `assets/deck-shell.html`
 
 | Class | Use |
 | --- | --- |
-| `.slide`, `.slide.dark` | a slide; dark is the accent gradient |
-| `.title-slide`, `.hero-facts`, `.accent-bar` | title slide; the bar is an optional colour strip at the bottom |
+| `.slide`, `.slide.dark` | a slide; dark is the stage variant with the warm glow and corner marks |
+| `.title-slide`, `.meta`, `.hero-facts` | title slide; the eyebrow pins top left, `.meta` (date, version) top right |
 | `.title-slide.with-motif` + `svg.title-motif` | a quiet SVG behind the title |
-| `.eyebrow`, `h1`, `h2`, `.rule`, `.lede`, `.kicker` | type; `.kicker` closes a full-width slide |
+| `.eyebrow` with `<b>01</b>`, `h1`, `h2` with `<em>`, `.rule`, `.lede`, `.kicker` | type; the `<b>` is the amber section number, `.kicker` closes a full-width slide |
 | `.split`, `.copy`, `.viz` | text left, visual right |
-| `.items` with `.sw`, `.num` or `.big`, then `.t b` and `.t span` | labelled rows: colour swatch, flagged number, or big numeral |
+| `.items` with `.sw`, `.num` or `.big`, then `.t b` and `.t span` | labelled rows: square swatch, mono number like `01`, or big serif numeral |
 | `.note` | closing line of a `.copy` column |
+| `.cols.c4` of `.stat` (`<b>` number, `<span>` label) | big numbers; `<i>` inside the `<b>` makes one amber |
 | `.stack`, `.rows`, `.cols` (`.c2`, `.c4`), `.groups`, `table`, `.chart` | full-width content slides |
 | `.badge` | the Proposal marker |
 
