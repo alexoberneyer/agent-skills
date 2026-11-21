@@ -34,31 +34,16 @@ to have read or changed the clipboard without a successful tool result.
 
 ## Instructions
 
-1. **Detect the language** of the input and keep the output in the same language.
-2. **Polish the text** while preserving the original intent, tone, and meaning:
-   - Fix grammar, spelling, and punctuation
-   - Fix sentences the transcription broke
-   - Add paragraph breaks for readability
-   - Do not use markdown emphasis (`**bold**`, `_italic_`). The output is usually
-     pasted into Teams or Slack, which render the markers literally instead of
-     formatting them. Carry emphasis through structure instead: short paragraphs,
-     one idea per line, key term at the front of the line. If the user asks to
-     "keep the markdown" (for Notion, GitHub, a doc), use it as normal.
-   - Convert lists or options into numbered/bulleted lists
-   - Remove filler words, false starts, and verbal tics (common in voice transcripts).
-     Keep phrasing the author uses on purpose, like "whatever" or "That's it."
-   - Keep the author's voice. The text is already theirs, so change only what is
-     broken.
-   - No em-dashes in the output. Do not introduce en-dashes, semicolons, or
-     phrasing like "not just X, but Y".
-3. **Do NOT** add new information, change the meaning, or remove important content.
-4. **Output the polished text** to the user so they can review it.
-5. **Copy to clipboard**: `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard`
+1. **Polish the text** by the [polish rules](rules.md) in this skill folder.
+   The prompt-box `/polish` commands in Pi and Claude Code read the same file,
+   so change the rules there, not here.
+2. **Output the polished text** to the user so they can review it.
+3. **Copy to clipboard**: `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard`
    on Linux, `clip` on Windows. Keep independent messages separate. For a
    clipboard-history batch with confirmed history support, copy each message
    individually in source order, not as one joined block. If history support is
    unavailable or unknown, leave each message separately copyable instead of
    serially overwriting the clipboard.
-6. Confirm each copy only after its clipboard command succeeds. A successful
+4. Confirm each copy only after its clipboard command succeeds. A successful
    write does not prove that clipboard history captured it. If a copy fails,
    leave that polished text available and state that it needs manual copying.
