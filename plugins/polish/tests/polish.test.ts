@@ -1,5 +1,5 @@
 import { expect, test } from 'claude-code/testing'
-import type { ModelCompleteResult, On } from 'claude-code'
+import type { ModelCompleteResult, On, UiCopyResult } from 'claude-code'
 import type { Engine } from 'claude-code/testing'
 
 const RULES = '# Polish rules\n\nSynthetic rule: fix the grammar.\n'
@@ -16,6 +16,7 @@ type Setup = {
   reply?: ModelCompleteResult
   refuse?: boolean
   isFilled?: boolean
+  copy?: UiCopyResult
 }
 
 // Stands for the engine beneath the mod and records what the mod asked of it.
@@ -26,6 +27,7 @@ async function harness($: Engine, on: On, setup: Setup = {}) {
     reads: [] as string[],
     requests: [] as { model: string; system?: string; prompt: string; effort?: string }[],
     fills: [] as { text: string; mode?: string }[],
+    copies: [] as string[],
     toasts: [] as string[],
     statuses: [] as (string | undefined)[],
   }
@@ -55,6 +57,10 @@ async function harness($: Engine, on: On, setup: Setup = {}) {
       ? { isFilled: false, refusal: 'dialog', text: '', cursor: 0 }
       : { isFilled: true, text: e.text, cursor: e.text.length }
   })
+  on('ui.copy', (_, e) => {
+    seen.copies.push(e.text)
+    return { value: setup.copy ?? { isCopied: true } }
+  })
   on('ui.toast', (_, e) => {
     seen.toasts.push(e.text)
     return { value: undefined }
@@ -64,10 +70,10 @@ async function harness($: Engine, on: On, setup: Setup = {}) {
     return { value: undefined }
   })
   await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
-  // As the person's Enter on `/polish <args>` reaches the engine.
-  const run = (args = '') =>
+  // As the person's Enter on `/<command> <args>` reaches the engine.
+  const run = (args = '', command = 'polish') =>
     $.command.run({
-      command: 'polish',
+      command,
       args,
       origin: { kind: 'composer' },
       presentation: { isFullscreen: false, columns: 80 },
@@ -75,12 +81,18 @@ async function harness($: Engine, on: On, setup: Setup = {}) {
   return { seen, run }
 }
 
-test('the mod registers /polish to run even mid-turn', async ($, on) => {
+test('the mod registers /polish and /polish-copy to run even mid-turn', async ($, on) => {
   const { seen } = await harness($, on)
   expect(seen.registered).toEqual([
     {
       name: 'polish',
       description: 'Polish text into the prompt box without sending it',
+      argumentHint: '[text]',
+      immediate: true,
+    },
+    {
+      name: 'polish-copy',
+      description: 'Polish text and copy it to the clipboard',
       argumentHint: '[text]',
       immediate: true,
     },
@@ -168,4 +180,51 @@ test('a box that cannot take the result shows it as output', async ($, on) => {
   const result = await run()
   expect(seen.fills).toHaveLength(1)
   expect(result.text).toBe('Polished text.')
+})
+
+test('/polish-copy <text> copies the result and leaves the box alone', async ($, on) => {
+  const { seen, run } = await harness($, on)
+  const result = await run('hey can u check teh deploy', 'polish-copy')
+  expect(result.text).toBeUndefined()
+  expect(seen.requests).toHaveLength(1)
+  expect(seen.requests[0]!.prompt).toBe('hey can u check teh deploy')
+  expect(seen.requests[0]!.model).toBe('haiku')
+  expect(seen.copies).toEqual(['Polished text.'])
+  expect(seen.fills).toEqual([])
+  expect(seen.toasts).toEqual(['Polished text copied.'])
+  expect(seen.statuses).toEqual(['Polishing...', undefined])
+})
+
+test('/polish-copy from a key copies the draft in the box', async ($, on) => {
+  const { seen, run } = await harness($, on, { boxes: ['um so plz fix teh loader'] })
+  await run('', 'polish-copy')
+  expect(seen.requests[0]!.prompt).toBe('um so plz fix teh loader')
+  expect(seen.copies).toEqual(['Polished text.'])
+  expect(seen.fills).toEqual([])
+})
+
+test('/polish-copy with nothing to polish makes no request', async ($, on) => {
+  const { seen, run } = await harness($, on)
+  expect((await run('', 'polish-copy')).text).toBeUndefined()
+  expect(seen.requests).toEqual([])
+  expect(seen.copies).toEqual([])
+  expect(seen.toasts).toEqual(['Nothing to polish. Run /polish-copy <text>.'])
+})
+
+test('/polish-copy copies nothing when the polish fails', async ($, on) => {
+  const reply = { isAnswered: false, reason: 'aborted', usage: usage(0) } as const
+  const { seen, run } = await harness($, on, { reply })
+  expect((await run('raw draft', 'polish-copy')).text).toBeUndefined()
+  expect(seen.copies).toEqual([])
+  expect(seen.toasts).toEqual([expect.stringMatching(/^Polish failed: it timed out\./)])
+})
+
+test('a clipboard that cannot take it shows the result as output', async ($, on) => {
+  const copy = { isCopied: false, reason: 'no-clipboard' } as const
+  const { seen, run } = await harness($, on, { copy })
+  const result = await run('raw draft', 'polish-copy')
+  expect(seen.copies).toEqual(['Polished text.'])
+  expect(seen.toasts).toEqual([])
+  expect(result.text).toMatch(/^Could not copy it \(no-clipboard\)\./)
+  expect(result.text).toMatch(/Polished text\.$/)
 })

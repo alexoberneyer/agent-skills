@@ -35,8 +35,8 @@ to have read or changed the clipboard without a successful tool result.
 ## Instructions
 
 1. **Polish the text** by the [polish rules](rules.md) in this skill folder.
-   The prompt-box `/polish` commands in Pi and Claude Code read the same file,
-   so change the rules there, not here.
+   `/polish` in Pi, and `/polish` and `/polish-copy` in Claude Code, read the
+   same file, so change the rules there, not here.
 2. **Output the polished text** to the user so they can review it.
 3. **Copy to clipboard**: `pbcopy` on macOS, `wl-copy` or `xclip -selection clipboard`
    on Linux, `clip` on Windows. Keep independent messages separate. For a

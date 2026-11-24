@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "polish",
-      "description": "Polish raw text into a clean message: /polish in the prompt box, or polish-text to the clipboard.",
+      "description": "Polish raw text into a clean message: /polish into the prompt box, /polish-copy or polish-text to the clipboard.",
       "version": "0.1.0",
       "author": {
         "name": "Alex Oberneyer"

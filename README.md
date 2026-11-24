@@ -35,6 +35,7 @@ command without duplicating its workflow or shadowing the Claude command name.
 | Command | What it does |
 | --- | --- |
 | `/polish [text]` | Polishes the text, or the draft already in the prompt box, and puts the result back in the prompt box unsent. Claude Code only. |
+| `/polish-copy [text]` | Polishes the text and copies the result to the clipboard. Leaves the prompt box alone. Claude Code only. |
 | `/polish:polish-text <text>` | Polishes raw text (voice memo transcript, rough draft) into a clean structured message in the same language, then copies it to the clipboard. |
 
 To install it on its own, at the prompt of a Claude Code terminal session:
@@ -62,9 +63,16 @@ the conversation. Failures leave the draft alone and say why in a toast. If you
 keep typing while it runs, your draft stays and the result shows as command
 output instead.
 
-`/polish` is a mod, an early-access Claude Code API that may change between
-releases. `claude plugin validate plugins/polish` and
-`claude plugin test plugins/polish` check it against your installed version.
+**Polish to the clipboard.** `/polish-copy` is the same side request for a
+message you send somewhere else, such as Teams. The result goes to the
+clipboard, and a toast confirms it. Bound to a key (`command:polish-copy`), it
+takes the draft in the box. `/polish:polish-text` does the same job as a full
+agent turn on the session's model. Use it when the text is already on the
+clipboard, or in Codex and Pi.
+
+`/polish` and `/polish-copy` are a mod, an early-access Claude Code API that
+may change between releases. `claude plugin validate plugins/polish` and
+`claude plugin test plugins/polish` check them against your installed version.
 [pi-extensions](https://github.com/alexoberneyer/pi-extensions) has the same
 command for Pi, reading the same rules file. Codex has no API to fill its
 prompt box.
