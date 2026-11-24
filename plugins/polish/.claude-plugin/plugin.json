@@ -1,0 +1,8 @@
+{
+  "name": "polish",
+  "version": "0.1.0",
+  "description": "Polish raw text into a clean message: /polish in the prompt box, or polish-text to the clipboard.",
+  "author": {
+    "name": "Alex Oberneyer"
+  }
+}

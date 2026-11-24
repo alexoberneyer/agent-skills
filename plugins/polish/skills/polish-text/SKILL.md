@@ -18,7 +18,7 @@ Take the user's raw text input and polish it into a well-structured, clear messa
 The user provides raw text after the slash command, e.g.:
 
 ```
-/writing:polish-text Hey Lukas, ich wollte mal fragen ob...
+/polish:polish-text Hey Lukas, ich wollte mal fragen ob...
 ```
 
 If no text is provided, read the input from the clipboard: `pbpaste` on macOS,

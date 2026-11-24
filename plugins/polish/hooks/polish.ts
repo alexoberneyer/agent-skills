@@ -1,4 +1,4 @@
-import type { Register } from 'claude-code'
+import type { ModelCompleteResult, Register } from 'claude-code'
 
 // Polish a draft in one side request and put the result in the prompt box,
 // unsent. The rules are the polish-text skill's shared rules.md.
@@ -28,7 +28,9 @@ export const register: Register = on => {
     const before = (await $.prompt.read()).text
     const draft = (e.args.trim() ? e.args : before).trim()
     if (!draft) {
-      $.ui.toast('Nothing to polish. Run /polish <text>, or press the polish key with a draft.')
+      $.ui.toast(
+        'Nothing to polish. Run /polish <text>. To polish the draft in the box, bind a key to command:polish.',
+      )
       return {}
     }
     if (running) {
@@ -39,21 +41,29 @@ export const register: Register = on => {
     try {
       rules = await $.fs.read(`${$.plugin.root}/${RULES}`)
     } catch {
-      $.ui.toast(`Cannot read the polish rules at ${RULES} in the writing plugin.`)
+      $.ui.toast(`Cannot read the polish rules at ${RULES} in the polish plugin.`)
       return {}
     }
 
     running = true
     $.ui.status('Polishing...')
     try {
-      const reply = await $.model.complete({
-        model: MODEL,
-        system: `${rules.trim()}\n\n${OUTPUT}`,
-        prompt: draft,
-        effort: 'low',
-        maxTokens: MAX_TOKENS,
-        timeoutMs: 60_000,
-      })
+      let reply: ModelCompleteResult
+      try {
+        reply = await $.model.complete({
+          model: MODEL,
+          system: `${rules.trim()}\n\n${OUTPUT}`,
+          prompt: draft,
+          effort: 'low',
+          maxTokens: MAX_TOKENS,
+          timeoutMs: 60_000,
+        })
+      } catch (err) {
+        // Rejects only when the engine refuses to send, such as a blocked model.
+        const why = err instanceof Error ? err.message : String(err)
+        $.ui.toast(`Polish failed: Claude Code refused the request (${why}). The draft is unchanged.`)
+        return {}
+      }
       const polished = reply.isAnswered ? reply.text.trim() : ''
       const failure = !reply.isAnswered
         ? reply.reason === 'api-error'

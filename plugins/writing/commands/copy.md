@@ -24,7 +24,7 @@ selected content for manual copying and say it was not copied automatically.
 - Strip the outer markdown code fence. Keep fences that are part of the content itself.
 - Strip heading syntax (`#`, `##`) unless the destination is a markdown file.
 - **Never leave em-dashes (—) in the copied text.** Replace with a comma, colon, parentheses, or a period + new sentence.
-- Otherwise copy verbatim. Do not re-edit, re-polish, or "improve" on the way to the clipboard — that is what `/writing:polish-text` is for.
+- Otherwise copy verbatim. Do not re-edit, re-polish, or "improve" on the way to the clipboard — that is what `/polish:polish-text` is for.
 
 ## Mechanics
 

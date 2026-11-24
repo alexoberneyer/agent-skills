@@ -14,6 +14,7 @@ type Setup = {
   boxes?: string[]
   rules?: string | null
   reply?: ModelCompleteResult
+  refuse?: boolean
   isFilled?: boolean
 }
 
@@ -44,6 +45,8 @@ async function harness($: Engine, on: On, setup: Setup = {}) {
   })
   on('model.complete', (_, e) => {
     seen.requests.push({ model: e.model, system: e.system, prompt: e.prompt, effort: e.effort })
+    // A throw leaves the call unanswered, so it rejects as a refused send does.
+    if (setup.refuse) throw new Error('model blocked')
     return { value: setup.reply ?? { isAnswered: true, text: ' Polished text. \n', usage: usage() } }
   })
   on('prompt.fill', (_, e) => {
@@ -142,6 +145,15 @@ for (const [name, reply, reason] of [
     expect(seen.statuses).toEqual(['Polishing...', undefined])
   })
 }
+
+test('a request the engine refuses leaves the draft alone and says why', async ($, on) => {
+  const { seen, run } = await harness($, on, { boxes: ['raw draft'], refuse: true })
+  expect((await run()).text).toBeUndefined()
+  expect(seen.fills).toEqual([])
+  expect(seen.toasts).toEqual([expect.stringMatching(/^Polish failed: Claude Code refused the request/)])
+  expect(seen.toasts[0]).toMatch(/The draft is unchanged\.$/)
+  expect(seen.statuses).toEqual(['Polishing...', undefined])
+})
 
 test('typing during the request is kept and the result shown instead', async ($, on) => {
   const { seen, run } = await harness($, on, { boxes: ['raw draft', 'raw draft and more'] })

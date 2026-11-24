@@ -7,6 +7,7 @@ packaged as a plugin marketplace. The skills also run in Codex, pi and omp.
 
 ```
 /plugin marketplace add alexoberneyer/agent-skills
+/plugin install polish@alexoberneyer
 /plugin install writing@alexoberneyer
 /plugin install boards@alexoberneyer
 /plugin install context@alexoberneyer
@@ -29,12 +30,52 @@ command without duplicating its workflow or shadowing the Claude command name.
 
 ## Plugins
 
+### `polish`
+
+| Command | What it does |
+| --- | --- |
+| `/polish [text]` | Polishes the text, or the draft already in the prompt box, and puts the result back in the prompt box unsent. Claude Code only. |
+| `/polish:polish-text <text>` | Polishes raw text (voice memo transcript, rough draft) into a clean structured message in the same language, then copies it to the clipboard. |
+
+To install it on its own, at the prompt of a Claude Code terminal session:
+
+```
+/plugin install polish --marketplace alexoberneyer/agent-skills
+```
+
+Then bind a key in `~/.claude/keybindings.json`. Without one, `/polish` only
+takes text as arguments, because typing `/polish` replaces the draft in the box.
+If the file exists, add the `Chat` entry to its `bindings` list.
+
+```json
+{
+  "bindings": [
+    { "context": "Chat", "bindings": { "ctrl+alt+p": "command:polish" } }
+  ]
+}
+```
+
+**Polish into the prompt box.** `/polish` is for a prompt you are about to send.
+It skips the agent turn: one Haiku request on the side, with the
+rules in `skills/polish-text/rules.md`. Neither the draft nor the result enters
+the conversation. Failures leave the draft alone and say why in a toast. If you
+keep typing while it runs, your draft stays and the result shows as command
+output instead.
+
+`/polish` is a mod, an early-access Claude Code API that may change between
+releases. `claude plugin validate plugins/polish` and
+`claude plugin test plugins/polish` check it against your installed version.
+[pi-extensions](https://github.com/alexoberneyer/pi-extensions) has the same
+command for Pi, reading the same rules file. Codex has no API to fill its
+prompt box.
+
+`polish-text` uses the available local clipboard tool. Without one, it returns
+the text for manual copying and never claims clipboard success.
+
 ### `writing`
 
 | Command | What it does |
 | --- | --- |
-| `/writing:polish-text <text>` | Polishes raw text (voice memo transcript, rough draft) into a clean structured message in the same language, then copies it to the clipboard. |
-| `/polish [text]` | Polishes the text, or the draft already in the prompt box, and puts the result back in the prompt box unsent. Claude Code only. |
 | `/writing:proofread-post <file>` | Proofreads a post before publishing and reports findings as a numbered diagnosis. Changes nothing until you ask. |
 | `/writing:draft [recipient]` | Writes a message you send under your own name from whatever the conversation holds: research, an investigation, notes. Keeps the uncertainty the source had, then copies it to the clipboard. |
 | `/writing:copy [what]` | Copies the deliverable out of the agent's previous message to the clipboard. The draft or the snippet, not the commentary wrapped around it. |
@@ -45,31 +86,11 @@ you can reply "apply #1 to #3" and decline the rest. It reads the project's
 it should check against, so it stays useful across different site generators.
 
 `draft` follows `skills/draft/voice.md`, which describes my writing voice. If you
-use it, replace that file with yours. `polish-text` and `proofread-post` do not
-load it, because they work on text you already wrote.
+use it, replace that file with yours. `proofread-post` does not load it, because
+it works on text you already wrote.
 
-`copy` and `polish-text` use the available local clipboard tool. Without one,
-they return the text for manual copying and never claim clipboard success.
-
-**Polish into the prompt box.** `/polish` is for a prompt you are about to send.
-It skips the agent turn: one Haiku request on the side, with the
-rules in `skills/polish-text/rules.md`. Neither the draft nor the result enters
-the conversation. Failures leave the draft alone and say why in a toast. If you
-keep typing while it runs, your draft stays and the result shows as command
-output instead.
-
-Bind a key to polish the draft in place, in `~/.claude/keybindings.json`:
-
-```json
-{ "context": "Chat", "bindings": { "ctrl+alt+p": "command:polish" } }
-```
-
-`/polish` is a mod, an early-access Claude Code API that may change between
-releases. `claude plugin validate plugins/writing` and
-`claude plugin test plugins/writing` check it against your installed version.
-[pi-extensions](https://github.com/alexoberneyer/pi-extensions) has the same
-command for Pi, reading the same rules file. Codex has no API to fill its
-prompt box.
+`copy` uses the available local clipboard tool. Without one, it returns the text
+for manual copying and never claims clipboard success.
 
 ### `boards`
 
