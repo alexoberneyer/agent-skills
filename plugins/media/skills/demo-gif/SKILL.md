@@ -5,7 +5,7 @@ description: >
   check every frame for private data and host it for a README. Use when the
   user says "make a GIF of this", "record a demo of the CLI", "add a demo GIF
   to the README", "show how the extension works in a GIF" or "/demo-gif". Not
-  for animated explainers or motion graphics.
+  for animated explainers or motion graphics (use motion-graphic).
 allowed-tools: Bash(vhs:*), Bash(ffmpeg:*), Bash(ffprobe:*)
 ---
 
@@ -112,7 +112,6 @@ render that showed private data.
 
 ## Not this skill
 
-Animated explainers, title cards and motion graphics belong to Remotion and its
-agent skills. Install those inside the Remotion project
-(`npx skills add remotion-dev/skills`), never globally for every agent.
-Remotion animates a mock-up. It does not record the real tool.
+Animated explainers, title cards and motion graphics belong to
+`motion-graphic`. It animates a mock-up with HyperFrames. It does not record the
+real tool.

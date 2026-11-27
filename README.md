@@ -24,7 +24,7 @@ Run `./install.sh` from this checkout. It links the skill folders into
 All three agents read that folder.
 
 Invoke a skill as `$<name>` in Codex or `/skill:<name>` in pi and omp:
-`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `daily-report`, `video`, `article`, `voice-memos`, `demo-gif`, `plain-deck`, `build-learning-artifact`, `review-learning-artifact`, `tutor`, `analyze-music-taste` and `recommend-music-events`.
+`polish-text`, `proofread-post`, `draft`, `notion-ticket`, `copy-answer`, `keep`, `daily-report`, `video`, `article`, `voice-memos`, `demo-gif`, `motion-graphic`, `plain-deck`, `build-learning-artifact`, `review-learning-artifact`, `tutor`, `analyze-music-taste` and `recommend-music-events`.
 Describing the task naturally works too. `copy-answer` adapts the existing `copy`
 command without duplicating its workflow or shadowing the Claude command name.
 
@@ -165,8 +165,11 @@ for scope, configuration, and privacy limits.
 | `/media:article <url>` | Reads an article or blog post and reports a verdict, key points, weak evidence and what the full read adds over the summary. |
 | `/media:voice-memos` | Transcribes Apple Voice Memos recorded on iPhone or Apple Watch, locally on the Mac, without opening Voice Memos. Picks up the memos added since the last run. |
 | `/media:demo-gif` | Records a terminal or TUI demo as a GIF with VHS, using sample data only, checks every frame for private data and hosts it for a README. |
+| `/media:motion-graphic` | Builds a short motion graphic or animated explainer as an MP4 with HyperFrames, from a storyboard agreed in chat to a render checked frame by frame. Shows the real tool's output on made-up input. |
 
 `demo-gif` needs [VHS](https://github.com/charmbracelet/vhs) (`brew install vhs`) and ffmpeg. It records sample data only and never publishes without asking.
+
+`motion-graphic` needs Node 22+ and ffmpeg. It runs [HyperFrames](https://github.com/heygen-com/hyperframes) through `npx`, pinned to one version, with telemetry off, and installs nothing globally. Projects stay in `~/Movies/motion/<slug>/` for later edits.
 
 `article` pulls the text with [trafilatura](https://trafilatura.readthedocs.io) through `uvx`, pinned to one version, and falls back to WebFetch for pages it cannot read.
 
